@@ -48,7 +48,7 @@ public class InstancesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> PutInstance(long id, InstanceDto dto)
+    public async Task<IActionResult> PutInstance(long id, NewInstanceDto dto)
     {
         var instance = _mapper.Map<Instance>(dto);
         instance.Id = id;
@@ -65,8 +65,8 @@ public class InstancesController : ControllerBase
     [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<InstanceDto>> PostInstance(NewInstanceDto dto)
     {
-        if (dto.Name == null)
-            return BadRequest(new Error() { Message = "Instance.Name cannot be null" });
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            return BadRequest(new Error() { Message = "Instance.Name cannot be null or empty" });
 
         var instance = _mapper.Map<Instance>(dto);
         await _service.PostInstanceAsync(instance);

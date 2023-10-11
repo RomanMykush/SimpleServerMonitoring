@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IInstanceService, InstanceService>();
+builder.Services.AddScoped<IInstanceConnectionService, InstanceConnectionService>();
 builder.Services.AddDbContext<DataContext>(opt =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
