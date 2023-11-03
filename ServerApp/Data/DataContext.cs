@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Data;
+namespace SimpleServerMonitoring.Data;
 
 public class DataContext : DbContext
 {

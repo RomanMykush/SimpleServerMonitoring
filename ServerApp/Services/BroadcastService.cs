@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using Renci.SshNet;
-using SimpleResourceMonitor.Dtos;
-using SimpleResourceMonitor.Interfaces;
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Interfaces;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Services;
+namespace SimpleServerMonitoring.Services;
 
 public class BroadcastService : BackgroundService
 {

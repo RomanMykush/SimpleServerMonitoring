@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SimpleResourceMonitor.ServerApp.Migrations
+namespace SimpleServerMonitoring.ServerApp.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

@@ -1,6 +1,6 @@
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Interfaces;
+namespace SimpleServerMonitoring.Interfaces;
 
 public interface IInstanceService
 {

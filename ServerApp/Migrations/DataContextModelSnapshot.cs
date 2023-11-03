@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SimpleResourceMonitor.Data;
+using SimpleServerMonitoring.Data;
 
 #nullable disable
 
-namespace SimpleResourceMonitor.ServerApp.Migrations
+namespace SimpleServerMonitoring.ServerApp.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
@@ -18,7 +18,7 @@ namespace SimpleResourceMonitor.ServerApp.Migrations
                 .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("SimpleResourceMonitor.Models.Instance", b =>
+            modelBuilder.Entity("SimpleServerMonitoring.Models.Instance", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,7 +35,7 @@ namespace SimpleResourceMonitor.ServerApp.Migrations
                     b.ToTable("Instances");
                 });
 
-            modelBuilder.Entity("SimpleResourceMonitor.Models.InstanceConnection", b =>
+            modelBuilder.Entity("SimpleServerMonitoring.Models.InstanceConnection", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,9 +66,9 @@ namespace SimpleResourceMonitor.ServerApp.Migrations
                     b.ToTable("InstanceConnections");
                 });
 
-            modelBuilder.Entity("SimpleResourceMonitor.Models.InstanceConnection", b =>
+            modelBuilder.Entity("SimpleServerMonitoring.Models.InstanceConnection", b =>
                 {
-                    b.HasOne("SimpleResourceMonitor.Models.Instance", "Instance")
+                    b.HasOne("SimpleServerMonitoring.Models.Instance", "Instance")
                         .WithMany("InstanceConnections")
                         .HasForeignKey("InstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -77,7 +77,7 @@ namespace SimpleResourceMonitor.ServerApp.Migrations
                     b.Navigation("Instance");
                 });
 
-            modelBuilder.Entity("SimpleResourceMonitor.Models.Instance", b =>
+            modelBuilder.Entity("SimpleServerMonitoring.Models.Instance", b =>
                 {
                     b.Navigation("InstanceConnections");
                 });

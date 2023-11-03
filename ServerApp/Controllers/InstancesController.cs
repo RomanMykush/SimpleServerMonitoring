@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SimpleResourceMonitor.Dtos;
-using SimpleResourceMonitor.Interfaces;
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Interfaces;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Controllers;
+namespace SimpleServerMonitoring.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

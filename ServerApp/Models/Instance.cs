@@ -1,4 +1,4 @@
-namespace SimpleResourceMonitor.Models;
+namespace SimpleServerMonitoring.Models;
 
 public class Instance
 {

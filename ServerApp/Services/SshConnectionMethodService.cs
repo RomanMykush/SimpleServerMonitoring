@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using Renci.SshNet;
-using SimpleResourceMonitor.Dtos;
-using SimpleResourceMonitor.Interfaces;
+using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Interfaces;
 
-namespace SimpleResourceMonitor.Services;
+namespace SimpleServerMonitoring.Services;
 
 public class SshConnectionMethodService : IConnectionMethodService
 {

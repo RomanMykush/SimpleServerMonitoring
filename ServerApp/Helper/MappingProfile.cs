@@ -1,9 +1,9 @@
 using System.Text;
 using AutoMapper;
-using SimpleResourceMonitor.Dtos;
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Helper;
+namespace SimpleServerMonitoring.Helper;
 
 public class MappingProfile : Profile
 {

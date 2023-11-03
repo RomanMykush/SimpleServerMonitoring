@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using SimpleResourceMonitor.Data;
-using SimpleResourceMonitor.Interfaces;
-using SimpleResourceMonitor.Models;
+using SimpleServerMonitoring.Data;
+using SimpleServerMonitoring.Interfaces;
+using SimpleServerMonitoring.Models;
 
-namespace SimpleResourceMonitor.Services;
+namespace SimpleServerMonitoring.Services;
 
 public class InstanceService : IInstanceService
 {

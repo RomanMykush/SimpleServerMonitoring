@@ -1,4 +1,4 @@
-namespace SimpleResourceMonitor.Dtos;
+namespace SimpleServerMonitoring.Dtos;
 
 public class NewInstanceDto
 {

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace SimpleResourceMonitor.ServerApp.Migrations
+namespace SimpleServerMonitoring.ServerApp.Migrations
 {
     /// <inheritdoc />
     public partial class ChangedSshPrivateKey : Migration

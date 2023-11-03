@@ -1,7 +1,7 @@
 using Renci.SshNet;
-using SimpleResourceMonitor.Dtos;
+using SimpleServerMonitoring.Dtos;
 
-namespace SimpleResourceMonitor.Interfaces;
+namespace SimpleServerMonitoring.Interfaces;
 
 public interface IConnectionMethodService
 {

@@ -1,7 +1,7 @@
-using SimpleResourceMonitor.Data;
+using SimpleServerMonitoring.Data;
 using Microsoft.EntityFrameworkCore;
-using SimpleResourceMonitor.Interfaces;
-using SimpleResourceMonitor.Services;
+using SimpleServerMonitoring.Interfaces;
+using SimpleServerMonitoring.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
