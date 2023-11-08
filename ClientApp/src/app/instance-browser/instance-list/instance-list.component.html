@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h4>Server list</h4>
+    </div>
+    <div class="col-auto">
+      <p>Filter by ▼</p>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-6" *ngFor="let instance of instances">
+      <app-instance-card-item [instance]="instance"></app-instance-card-item>
+    </div>
+  </div>
+</div>
