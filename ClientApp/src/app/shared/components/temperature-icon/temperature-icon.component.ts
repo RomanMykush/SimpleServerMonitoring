@@ -20,9 +20,11 @@ export class TemperatureIconComponent implements OnChanges {
     this.temperature = keys[0];
     keys = keys.slice(1);
 
-    keys.forEach(key => {
-      if (this.degrees > key)
-        this.temperature = key;
+    keys.every(key => {
+      if (this.degrees < key)
+        return false;
+      this.temperature = key;
+      return true;
     });
   }
 }
