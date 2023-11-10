@@ -7,6 +7,7 @@ import { HeaderComponent } from './header/header.component';
 import { InstanceListComponent } from './instance-browser/instance-list/instance-list.component';
 import { InstanceBrowserComponent } from './instance-browser/instance-browser.component';
 import { InstanceCardItemComponent } from './instance-browser/instance-list/instance-card-item/instance-card-item.component';
+import { TemperatureIconComponent } from './shared/components/temperature-icon/temperature-icon.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { InstanceCardItemComponent } from './instance-browser/instance-list/inst
     HeaderComponent,
     InstanceListComponent,
     InstanceBrowserComponent,
-    InstanceCardItemComponent
+    InstanceCardItemComponent,
+    TemperatureIconComponent
   ],
   imports: [
     BrowserModule,

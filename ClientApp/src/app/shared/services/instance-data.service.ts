@@ -10,7 +10,7 @@ export class InstanceDataService {
 
   currentIntanceData: { [key: number]: InstanceData } = {
     // Temp solution    TODO: Remove after http requests will be implemented
-    1: new InstanceData(1, true, 42, 65, 1024, 105),
+    1: new InstanceData(1, true, 42, 28, 1024, 105),
     2: new InstanceData(2, true, 24, 86, 1024, 835),
     3: new InstanceData(3, false, 12, 34, 1024, 942),
     4: new InstanceData(4, true, 74, 53, 1024, 635),
