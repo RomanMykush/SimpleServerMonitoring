@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Instance } from 'src/app/shared/models/instance.model';
 import { InstanceService } from 'src/app/shared/services/instance.service';
@@ -8,7 +8,7 @@ import { InstanceService } from 'src/app/shared/services/instance.service';
   templateUrl: './instance-list.component.html',
   styleUrls: ['./instance-list.component.scss']
 })
-export class InstanceListComponent {
+export class InstanceListComponent implements OnInit, OnDestroy {
   instances: Instance[];
   subscription: Subscription;
 
