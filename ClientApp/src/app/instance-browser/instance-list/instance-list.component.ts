@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Instance } from 'src/app/shared/instance.model';
-import { InstanceService } from 'src/app/shared/instance.service';
+import { Instance } from 'src/app/shared/models/instance.model';
+import { InstanceService } from 'src/app/shared/services/instance.service';
 
 @Component({
   selector: 'app-instance-list',

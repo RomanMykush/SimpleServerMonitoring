@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Instance } from 'src/app/shared/instance.model';
+import { Instance } from 'src/app/shared/models/instance.model';
 
 @Component({
   selector: 'app-instance-card-item',
