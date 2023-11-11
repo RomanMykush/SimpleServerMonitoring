@@ -2,6 +2,7 @@ using SimpleServerMonitoring.Data;
 using Microsoft.EntityFrameworkCore;
 using SimpleServerMonitoring.Interfaces;
 using SimpleServerMonitoring.Services;
+using SimpleServerMonitoring.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -24,6 +25,8 @@ builder.Services.AddDbContext<DataContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +44,8 @@ app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "api/{controller}/{action=Index}/{id?}");
+
+app.MapHub<InstanceDataHub>("/data-hub");
 
 app.MapFallbackToFile("index.html");
 

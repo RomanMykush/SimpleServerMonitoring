@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.SignalR;
 using Renci.SshNet;
 using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Hubs;
 using SimpleServerMonitoring.Interfaces;
 using SimpleServerMonitoring.Models;
 
@@ -26,19 +28,22 @@ public class BroadcastService : BackgroundService
         IInstanceService instanceService = scope.ServiceProvider.GetRequiredService<IInstanceService>();
         IInstanceConnectionService instanceConnectionService = scope.ServiceProvider.GetRequiredService<IInstanceConnectionService>();
         IConnectionMethodService connectionMethodService = scope.ServiceProvider.GetRequiredService<IConnectionMethodService>();
+        IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub = scope.ServiceProvider.GetRequiredService<IHubContext<InstanceDataHub, IInstanceDataClient>>();
 
         while (await _timer.WaitForNextTickAsync(stoppingToken)
             && !stoppingToken.IsCancellationRequested)
         {
             await StartTransferingData(instanceService,
                 instanceConnectionService,
-                connectionMethodService);
+                connectionMethodService,
+                instanceDataHub);
         }
     }
 
     public async Task StartTransferingData(IInstanceService instanceService,
         IInstanceConnectionService instanceConnectionService,
-        IConnectionMethodService connectionMethodService)
+        IConnectionMethodService connectionMethodService,
+        IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub)
     {
         List<long> instanceIds = (await instanceService.GetInstancesAsync())!.Select(i => i.Id).ToList();
 
@@ -65,8 +70,7 @@ public class BroadcastService : BackgroundService
                     var data = FetchData(instanceConnections,
                         connectionMethodService);
                     // Broadcast data to clients
-
-                    // TODO: Implement broadcast data to clients
+                    await instanceDataHub.Clients.All.ReceiveData(data);
                 }
                 catch (ArgumentException)
                 {
