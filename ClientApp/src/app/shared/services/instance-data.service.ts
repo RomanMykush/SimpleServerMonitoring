@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InstanceData } from '../models/instance-data.model';
 import { Subject } from 'rxjs';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 @Injectable({
   providedIn: 'root'
@@ -8,14 +9,24 @@ import { Subject } from 'rxjs';
 export class InstanceDataService {
   instanceDataChanged = new Subject<InstanceData>();
 
-  currentIntanceData: { [key: number]: InstanceData } = {
-    // Temp solution    TODO: Remove after http requests will be implemented
-    1: new InstanceData(1, true, 42, 28, 1024, 105),
-    2: new InstanceData(2, true, 24, 86, 1024, 835),
-    3: new InstanceData(3, false, 12, 34, 1024, 942),
-    4: new InstanceData(4, true, 74, 53, 1024, 635),
-    5: new InstanceData(5, true, 53, 97, 1024, 835)
-  };
+  currentIntanceData: { [key: number]: InstanceData } = {};
+
+  private _hubConnection: HubConnection;
+
+  constructor() {
+    this._hubConnection = new HubConnectionBuilder()
+      .withUrl('data-hub')
+      .build();
+    this._hubConnection
+      .start()
+      .then(() => console.log('Connection started!'))
+      .catch((err: unknown) => console.log('Error while establishing connection\n' + err));
+
+    this._hubConnection.on('ReceiveData', (data: InstanceData) => {
+      this.instanceDataChanged.next(data);
+      this.currentIntanceData[data.instanceId] = data;
+    });
+  }
 
   getInstanceData(instanceId: number) {
     if (!this.currentIntanceData.hasOwnProperty(instanceId))

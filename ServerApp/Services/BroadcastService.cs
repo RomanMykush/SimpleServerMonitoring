@@ -69,6 +69,8 @@ public class BroadcastService : BackgroundService
                     // Fetch data from instance
                     var data = FetchData(instanceConnections,
                         connectionMethodService);
+                    // Set instance id
+                    data.InstanceId = currentId;
                     // Broadcast data to clients
                     await instanceDataHub.Clients.All.ReceiveData(data);
                 }

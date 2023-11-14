@@ -1,10 +1,10 @@
 export class InstanceData {
     constructor(
-        public isntanceId: number,
         public isOnline: boolean,
+        public maxRam: number,
+        public ramLoad: number,
         public cpuLoad: number,
         public cpuTemp: number,
-        public ramMax: number,
-        public ramLoad: number
+        public instanceId: number
     ) { }
 }

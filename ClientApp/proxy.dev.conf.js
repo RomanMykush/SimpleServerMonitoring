@@ -6,7 +6,7 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 const PROXY_CONFIG = [
   {
     context: [
-      "/api/*",
+      "/api/**",
    ],
     proxyTimeout: 10000,
     target: target,
@@ -14,6 +14,15 @@ const PROXY_CONFIG = [
     headers: {
       Connection: 'Keep-Alive'
     }
+  },
+  {
+    context: [
+      "/data-hub/**",
+    ],
+    proxyTimeout: 10000,
+    target: target,
+    secure: false,
+    ws: true
   }
 ]
 

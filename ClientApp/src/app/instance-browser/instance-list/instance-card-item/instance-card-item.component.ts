@@ -17,16 +17,15 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
   constructor(private instanceDataService: InstanceDataService) { }
 
   ngOnInit() {
-    // Temp solution    TODO: Remove after http requests will be implemented
     let initInstanceData = this.instanceDataService.getInstanceData(this.instance.id);
     if (initInstanceData != null)
       this.instanceData = initInstanceData;
     // Subscribe to updates
     this.subscription = this.instanceDataService.instanceDataChanged.subscribe(
-      (instanceData: InstanceData) => {
-        if (this.instance.id != instanceData.isntanceId)
+      (data: InstanceData) => {
+        if (this.instance.id != data.instanceId)
           return;
-        this.instanceData = instanceData;
+        this.instanceData = data;
       }
     );
   }
@@ -44,7 +43,7 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
   getRamLoadPercent() {
     if (!this.isActive())
       return '0%';
-    return this.instanceData.ramLoad / this.instanceData.ramMax * 100 + '%';
+    return this.instanceData.ramLoad / this.instanceData.maxRam * 100 + '%';
   }
 
   ngOnDestroy(): void {
