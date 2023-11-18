@@ -8,6 +8,7 @@ import { InstanceListComponent } from './instance-browser/instance-list/instance
 import { InstanceBrowserComponent } from './instance-browser/instance-browser.component';
 import { InstanceCardItemComponent } from './instance-browser/instance-list/instance-card-item/instance-card-item.component';
 import { TemperatureIconComponent } from './shared/components/temperature-icon/temperature-icon.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TemperatureIconComponent } from './shared/components/temperature-icon/t
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
