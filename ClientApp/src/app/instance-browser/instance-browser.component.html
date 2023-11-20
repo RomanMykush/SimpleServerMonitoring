@@ -1,10 +1,11 @@
-<div class="container">
-  <div class="row">
-    <div class="col">
+<mat-sidenav-container>
+  <mat-sidenav opened="!checkForEmptyRoute()" mode="side" position="end">
+    <router-outlet></router-outlet>
+  </mat-sidenav>
+  
+  <mat-sidenav-content>
+    <div class="container">
       <app-instance-list></app-instance-list>
     </div>
-    <div class="col-auto">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

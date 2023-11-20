@@ -9,6 +9,11 @@ import { InstanceBrowserComponent } from './instance-browser/instance-browser.co
 import { InstanceCardItemComponent } from './instance-browser/instance-list/instance-card-item/instance-card-item.component';
 import { TemperatureIconComponent } from './shared/components/temperature-icon/temperature-icon.component';
 import { HttpClientModule } from '@angular/common/http';
+import { InstanceDetailComponent } from './instance-browser/instance-detail/instance-detail.component';
+import { InstanceEditComponent } from './instance-browser/instance-edit/instance-edit.component';
+import { DummyComponent } from './shared/components/dummy/dummy.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
   declarations: [
@@ -17,12 +22,17 @@ import { HttpClientModule } from '@angular/common/http';
     InstanceListComponent,
     InstanceBrowserComponent,
     InstanceCardItemComponent,
-    TemperatureIconComponent
+    TemperatureIconComponent,
+    InstanceDetailComponent,
+    InstanceEditComponent,
+    DummyComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatSidenavModule
   ],
   providers: [],
   bootstrap: [AppComponent]
