@@ -21,6 +21,10 @@ export class InstanceService {
     return this.instances.slice();
   }
 
+  getInstance(id: number) {
+    return this.instances.find((element) => element.id == id);
+  }
+
   setInstances(instances: Instance[]) {
     this.instances = instances;
     this.instancesChanged.next(this.instances.slice());

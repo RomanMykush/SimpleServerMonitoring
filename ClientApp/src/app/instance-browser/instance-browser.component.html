@@ -1,6 +1,8 @@
 <mat-sidenav-container>
-  <mat-sidenav opened="!checkForEmptyRoute()" mode="side" position="end">
-    <router-outlet></router-outlet>
+  <mat-sidenav [opened]="!checkForEmptyRoute()" mode="side" position="end">
+    <div class="container-fluid h-100">
+      <router-outlet></router-outlet>
+    </div>
   </mat-sidenav>
   
   <mat-sidenav-content>

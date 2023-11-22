@@ -14,6 +14,8 @@ import { InstanceEditComponent } from './instance-browser/instance-edit/instance
 import { DummyComponent } from './shared/components/dummy/dummy.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
+import { LoadingFailComponent } from './shared/components/loading-fail/loading-fail.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     TemperatureIconComponent,
     InstanceDetailComponent,
     InstanceEditComponent,
-    DummyComponent
+    DummyComponent,
+    LoadingSpinnerComponent,
+    LoadingFailComponent
   ],
   imports: [
     BrowserModule,
