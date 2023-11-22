@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dummy',
-  template: '',
-  styles: ['']
+  template: ''
 })
 export class DummyComponent { }
