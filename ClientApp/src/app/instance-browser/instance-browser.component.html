@@ -1,10 +1,10 @@
-<mat-sidenav-container>
+<mat-sidenav-container class="h-100">
   <mat-sidenav [opened]="!checkForEmptyRoute()" mode="side" position="end">
     <div class="container-fluid h-100">
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav>
-  
+
   <mat-sidenav-content>
     <div class="container">
       <app-instance-list></app-instance-list>

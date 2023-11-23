@@ -1,15 +1,16 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col">
-      <h4>Server list</h4>
+  <div [ngStyle]="{margin: '0 ' + rowMargin / 2 + 'px'}">
+    <div class="row mx-auto">
+      <div class="col">
+        <h3>Server list</h3>
+      </div>
+      <div class="col-auto mt-1">
+        <h5>Filter by ▼</h5>
+      </div>
     </div>
-    <div class="col-auto">
-      <p>Filter by ▼</p>
-    </div>
-  </div>
-  <div class="row g-3">
-    <div class="col-md-12 col-lg-6" *ngFor="let instance of instances">
-      <app-instance-card-item [instance]="instance"></app-instance-card-item>
+    <div #itemListRow class="row g-3 mx-auto">
+      <app-instance-card-item [ngClass]="'col-' + 12 / columnNumber" *ngFor="let instance of instances"
+        [instance]="instance"></app-instance-card-item>
     </div>
   </div>
 </div>
