@@ -57,13 +57,13 @@ public class BroadcastService : BackgroundService
                 continue;
             }
 
+            var instanceConnections = await instanceConnectionService.GetInstanceConnectionsAsync(currentId);
+            if (instanceConnections == null || !instanceConnections.Any())
+                continue;
+
             // Create Task of data transfer
             var task = Task.Run(async () =>
             {
-                var instanceConnections = await instanceConnectionService.GetInstanceConnectionsAsync(currentId);
-                if (instanceConnections == null)
-                    return;
-
                 try
                 {
                     // Fetch data from instance
