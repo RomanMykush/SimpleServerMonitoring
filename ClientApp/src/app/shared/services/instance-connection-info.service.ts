@@ -38,7 +38,6 @@ export class InstanceConnectionInfoService {
       this.http.get<InstanceConnectionInfo[]>('api/InstanceConnections/Instance/' + element.id).subscribe((instConnInfos) => {
         this.instConnInfos[element.id] = instConnInfos;
         this.instConnInfo$.next({ instanceId: element.id, instConnInfos: instConnInfos });
-        console.log(this.getInstanceConnectionInfos(element.id));
       });
     });
   }

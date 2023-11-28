@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DataState } from 'src/app/shared/data-state';
 import { InstanceConnectionInfo } from 'src/app/shared/models/instance-connection-info.model';
@@ -28,7 +28,8 @@ export class InstanceDetailComponent {
   dataState: DataState;
   dataFetchTimeout: number | null = null;
 
-  constructor(private route: ActivatedRoute,
+  constructor(private router: Router,
+    private route: ActivatedRoute,
     private instanceService: InstanceService,
     private instanceDataService: InstanceDataService,
     private instConnInfoService: InstanceConnectionInfoService) { }
@@ -78,6 +79,7 @@ export class InstanceDetailComponent {
     // Subscribe to updates of instance
     this.instanceSub = this.instanceService.instances$.subscribe(
       (instances: Instance[]) => {
+        this.dataState = DataState.Loading;
         this.updateInstance();
       }
     );
@@ -123,7 +125,12 @@ export class InstanceDetailComponent {
   }
 
   onDelete() {
-    // TODO: Implement deleting
+    let observable = this.instanceService.deleteInstance(this.instance.id);
+    this.dataState = DataState.Loading;
+    if (!observable)
+      return;
+
+    observable.subscribe(() => { this.router.navigate(['']); });
   }
 
   ngOnDestroy() {

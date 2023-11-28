@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { InstanceData } from 'src/app/shared/models/instance-data.model';
 import { Instance } from 'src/app/shared/models/instance.model';
 import { InstanceDataService } from 'src/app/shared/services/instance-data.service';
+import { InstanceService } from 'src/app/shared/services/instance.service';
 
 @Component({
   selector: 'app-instance-card-item',
@@ -14,7 +15,8 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
   instanceData: InstanceData;
   subscription: Subscription;
 
-  constructor(private instanceDataService: InstanceDataService) { }
+  constructor(private instanceService: InstanceService,
+    private instanceDataService: InstanceDataService) { }
 
   ngOnInit() {
     let initInstanceData = this.instanceDataService.getInstanceData(this.instance.id);
@@ -47,7 +49,7 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    // TODO: Implement instance deletion
+    this.instanceService.deleteInstance(this.instance.id);
   }
 
   ngOnDestroy(): void {
