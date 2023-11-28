@@ -11,9 +11,10 @@ public class MappingProfile : Profile
     {
         CreateMap<Instance, InstanceDto>().ReverseMap();
         CreateMap<Instance, NewInstanceDto>().ReverseMap();
-        CreateMap<InstanceConnection, InstanceConnectionDto>()
+        CreateMap<InstanceConnection, InstanceConnectionDto>().ReverseMap();
+        CreateMap<InstanceConnection, FullInstanceConnectionDto>()
             .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetString(src.SshPrivateKey) : null));
-        CreateMap<InstanceConnectionDto, InstanceConnection>()
+        CreateMap<FullInstanceConnectionDto, InstanceConnection>()
             .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetBytes(src.SshPrivateKey) : null));
         CreateMap<InstanceConnection, NewInstanceConnectionDto>()
             .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetString(src.SshPrivateKey) : null));

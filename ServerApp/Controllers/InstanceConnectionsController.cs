@@ -40,7 +40,7 @@ public class InstanceConnectionsController : ControllerBase
         if (instanceConnection == null)
             return NotFound(new ErrorDto() { Message = "InstanceConnection wasn't found" });
 
-        return Ok(_mapper.Map<InstanceConnectionDto>(instanceConnection));
+        return Ok(_mapper.Map<FullInstanceConnectionDto>(instanceConnection));
     }
 
     // PUT: api/InstanceConnections/5
@@ -73,7 +73,7 @@ public class InstanceConnectionsController : ControllerBase
         if (!await _service.PostInstanceConnectionAsync(instanceId, instanceConnection))
             return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
 
-        return CreatedAtAction(nameof(GetInstanceConnection), _mapper.Map<InstanceConnectionDto>(instanceConnection));
+        return CreatedAtAction(nameof(GetInstanceConnection), _mapper.Map<FullInstanceConnectionDto>(instanceConnection));
     }
 
     // DELETE: api/InstanceConnections/5

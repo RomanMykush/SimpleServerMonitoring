@@ -5,14 +5,27 @@
       <h4 class="card-text pe-3">{{connectionInfo.sshUsername}}@{{connectionInfo.ip}}</h4>
 
       <mat-menu #cardMenu="matMenu" xPosition="before">
-        <button (click)="onShowSecret()"mat-menu-item>Show secret</button>
+        <button *ngIf="!fullConnectionInfo" (click)="onShowSecret()"mat-menu-item>Show secret</button>
+        <button *ngIf="fullConnectionInfo" (click)="onHideSecret()"mat-menu-item>Hide secret</button>
         <button (click)="onDelete()" mat-menu-item>Delete</button>
       </mat-menu>
       <button mat-icon-button class="h4-icon-button" [matMenuTriggerFor]="cardMenu">
         <mat-icon>more_vert</mat-icon>
       </button>
     </div>
-    <!-- TODO: Implement secret showing -->
-
+    <div class="space-content" *ngIf="fullConnectionInfo">
+      <div *ngIf="fullConnectionInfo.sshPassword" class="d-flex">
+        <h5 class="pe-2">Password: </h5>
+        <input class="flex-fill" type="text" value="{{fullConnectionInfo.sshPassword}}" readonly>
+      </div>
+      <div *ngIf="fullConnectionInfo.sshPrivateKey" class="d-flex">
+        <h5 class="pe-2">Private key: </h5>
+        <input class="flex-fill" type="text" value="{{fullConnectionInfo.sshPrivateKey}}" readonly>
+      </div>
+      <div *ngIf="fullConnectionInfo.sshKeyPassphrase" class="d-flex">
+        <h5 class="pe-2">Key passphrase: </h5>
+        <input class="flex-fill" type="text" value="{{fullConnectionInfo.sshKeyPassphrase}}" readonly>
+      </div>
+    </div>
   </div>
 </div>

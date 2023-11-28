@@ -33,7 +33,7 @@ export class InstanceConnectionInfoService {
     return this.instConnInfos[instanceId];
   }
 
-  deleteConnectionInfo(id: number) {
+  findConnectionInfoIndex(id: number) {
     let instanceId = -1;
     let index = -1;
 
@@ -44,23 +44,32 @@ export class InstanceConnectionInfoService {
         break;
       }
     }
-    if (instanceId == -1)
+    return { instanceId: instanceId, index: index };
+  }
+
+  deleteConnectionInfo(id: number) {
+    let pos = this.findConnectionInfoIndex(id);
+    if (pos.instanceId == -1)
       return null;
 
     let observable = this.http.delete('api/InstanceConnections/' + id).pipe(share());
     observable.subscribe(() => {
-      this.instConnInfos[instanceId].splice(index, 1);
-      this.instConnInfo$.next({ instanceId: instanceId, instConnInfos: this.instConnInfos[instanceId].slice() });
+      this.instConnInfos[pos.instanceId].splice(pos.index, 1);
+      this.instConnInfo$.next({ instanceId: pos.instanceId, instConnInfos: this.instConnInfos[pos.instanceId].slice() });
     });
     return observable;
   }
 
-  fetchConnectionInfos(instances: Instance[]) {
+  private fetchConnectionInfos(instances: Instance[]) {
     instances.forEach(element => {
-      this.http.get<InstanceConnectionInfo[]>('api/InstanceConnections/Instance/' + element.id).subscribe((instConnInfos) => {
-        this.instConnInfos[element.id] = instConnInfos;
-        this.instConnInfo$.next({ instanceId: element.id, instConnInfos: instConnInfos });
+      this.http.get<InstanceConnectionInfo[]>('api/InstanceConnections/Instance/' + element.id).subscribe((response) => {
+        this.instConnInfos[element.id] = response;
+        this.instConnInfo$.next({ instanceId: element.id, instConnInfos: response });
       });
     });
+  }
+
+  fetchFullConnectionInfo(id: number) {
+    return this.http.get<InstanceConnectionInfo>('api/InstanceConnections/' + id).pipe(share());
   }
 }

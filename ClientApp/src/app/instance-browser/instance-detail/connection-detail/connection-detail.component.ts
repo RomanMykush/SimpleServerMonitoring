@@ -9,11 +9,18 @@ import { InstanceConnectionInfoService } from 'src/app/shared/services/instance-
 })
 export class ConnectionDetailComponent {
   @Input() connectionInfo: InstanceConnectionInfo;
+  fullConnectionInfo: InstanceConnectionInfo | null;
 
   constructor(private instConnInfoService: InstanceConnectionInfoService) { }
 
   onShowSecret() {
-    // TODO: Implement secret showing
+    this.instConnInfoService.fetchFullConnectionInfo(this.connectionInfo.id)?.subscribe((res) => {
+      this.fullConnectionInfo = res;
+    });
+  }
+
+  onHideSecret() {
+    this.fullConnectionInfo = null;
   }
 
   onDelete() {

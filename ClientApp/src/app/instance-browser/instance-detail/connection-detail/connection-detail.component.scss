@@ -1,3 +1,9 @@
 .card-body * {
   margin-bottom: 0;
 }
+
+.space-content {
+  >* {
+    margin-top: 1rem;
+  }
+}
