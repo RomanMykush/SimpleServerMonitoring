@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class InstanceService {
-  instancesChanged = new Subject<Instance[]>();
+  instances$ = new Subject<Instance[]>();
 
   private instances: Instance[] = [];
 
@@ -27,7 +27,7 @@ export class InstanceService {
 
   setInstances(instances: Instance[]) {
     this.instances = instances;
-    this.instancesChanged.next(this.instances.slice());
+    this.instances$.next(this.instances.slice());
   }
 
   fetchInstances() {

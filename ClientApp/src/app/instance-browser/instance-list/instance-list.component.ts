@@ -28,7 +28,7 @@ export class InstanceListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     // Subscribe to updates
-    this.subscription = this.instanceService.instancesChanged.subscribe(
+    this.subscription = this.instanceService.instances$.subscribe(
       (instances: Instance[]) => {
         this.instances = instances;
       }

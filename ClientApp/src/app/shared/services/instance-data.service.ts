@@ -7,9 +7,9 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class InstanceDataService {
-  instanceDataChanged = new Subject<InstanceData>();
+  instanceData$ = new Subject<InstanceData>();
 
-  currentIntanceData: { [key: number]: InstanceData } = {};
+  currentIntanceData: { [instanceId: number]: InstanceData } = {};
 
   private _hubConnection: HubConnection;
 
@@ -19,12 +19,12 @@ export class InstanceDataService {
       .build();
     this._hubConnection
       .start()
-      .then(() => console.log('Connection started!'))
+      .then(() => console.log('Hub connection started!'))
       .catch((err: unknown) => console.log('Error while establishing connection\n' + err));
 
     this._hubConnection.on('ReceiveData', (data: InstanceData) => {
-      this.instanceDataChanged.next(data);
       this.currentIntanceData[data.instanceId] = data;
+      this.instanceData$.next(data);
     });
   }
 

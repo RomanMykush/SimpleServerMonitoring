@@ -2,11 +2,21 @@
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h4 class="card-title">{{instance.name}}</h4>
-      <!-- TODO: Implement proper pipeline for image selection -->
-      <h5 class="text-end mt-auto">
-        <img class="align-top os-image" src="assets/os_images/default_placeholder.png" alt="">
-        {{instance.os}}
-      </h5>
+      <div class="d-flex text-end">
+        <!-- TODO: Implement proper pipeline for image selection -->
+        <h5 class="mt-auto pe-2">
+          <img class="align-top os-image" src="assets/os_images/default_placeholder.png" alt="">
+          {{instance.os}}
+        </h5>
+        <mat-menu #detailMenu="matMenu">
+          <button routerLink="{{instance.id}}" mat-menu-item>Show details</button>
+          <button routerLink="{{instance.id}}/edit" mat-menu-item>Edit</button>
+          <button (click)="onDelete()" mat-menu-item>Delete</button>
+        </mat-menu>
+        <button mat-icon-button class="h4-icon-button" [matMenuTriggerFor]="detailMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
     </div>
     <p class="card-text">{{instance.description}}</p>
 

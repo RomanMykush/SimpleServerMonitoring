@@ -21,7 +21,7 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
     if (initInstanceData != null)
       this.instanceData = initInstanceData;
     // Subscribe to updates
-    this.subscription = this.instanceDataService.instanceDataChanged.subscribe(
+    this.subscription = this.instanceDataService.instanceData$.subscribe(
       (data: InstanceData) => {
         if (this.instance.id != data.instanceId)
           return;
@@ -44,6 +44,10 @@ export class InstanceCardItemComponent implements OnInit, OnDestroy {
     if (!this.isActive())
       return '0%';
     return this.instanceData.ramLoad / this.instanceData.maxRam * 100 + '%';
+  }
+
+  onDelete() {
+    // TODO: Implement instance deletion
   }
 
   ngOnDestroy(): void {

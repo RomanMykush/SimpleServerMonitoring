@@ -1,5 +1,6 @@
 <div class="container-fluid main-container h-100" [ngSwitch]="dataState">
   <div *ngSwitchCase="dataStateEnum.Available">
+    <!-- Basic instance info -->
     <div class="row">
       <div class="col">
         <h3>{{instance.name}}</h3>
@@ -11,8 +12,19 @@
           {{instance.os}}
         </h4>
       </div>
+      <div class="col-auto">
+        <mat-menu #detailMenu="matMenu" xPosition="before">
+          <button routerLink="" mat-menu-item>Close</button>
+          <button routerLink="edit" mat-menu-item>Edit</button>
+          <button (click)="onDelete()" mat-menu-item>Delete</button>
+        </mat-menu>
+        <button mat-icon-button class="h4-icon-button" [matMenuTriggerFor]="detailMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
     </div>
     <p>{{instance.description}}</p>
+    <!-- Instance data -->
     <div *ngIf="isActive()">
       <h3>Data</h3>
       <!-- Cpu data -->
@@ -43,7 +55,13 @@
         <div class="progress-bar" [ngStyle]="{width: getRamLoadPercent()}"></div>
       </div>
     </div>
-    <!-- TODO: Add connection info -->
+    <!-- Instance connection info -->
+    <div>
+      <h3>Connection</h3>
+      <div *ngFor="let connInfo of instConnInfos">
+        <app-connection-detail [connectionInfo]="connInfo"></app-connection-detail>
+      </div>
+    </div>
   </div>
 
   <div *ngSwitchCase="dataStateEnum.Loading" class="h-100">

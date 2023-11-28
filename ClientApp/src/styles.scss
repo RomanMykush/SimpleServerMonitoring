@@ -2,3 +2,33 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.h4-icon-button {
+  width: 2.6ex !important;
+  height: 2.6ex !important;
+  padding: 0px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  & > *[role=img] {
+    width: 1.73ex;
+    height: 1.73ex;
+    font-size: 1.73ex;
+
+    svg {
+      width: 1.73ex;
+      height: 1.73ex;
+    }
+  }
+
+  .material-icons {
+    margin-left: -4px;
+    margin-top: -2px;
+  }
+
+  .mat-mdc-button-touch-target {
+    width: 2.6ex !important;
+    height: 2.6ex !important;
+  }
+}

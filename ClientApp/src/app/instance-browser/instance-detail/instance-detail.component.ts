@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DataState } from 'src/app/shared/data-state';
+import { InstanceConnectionInfo } from 'src/app/shared/models/instance-connection-info.model';
 import { InstanceData } from 'src/app/shared/models/instance-data.model';
 import { Instance } from 'src/app/shared/models/instance.model';
+import { InstanceConnectionInfoService } from 'src/app/shared/services/instance-connection-info.service';
 import { InstanceDataService } from 'src/app/shared/services/instance-data.service';
 import { InstanceService } from 'src/app/shared/services/instance.service';
 
@@ -16,18 +18,20 @@ export class InstanceDetailComponent {
   instanceId: number;
   instance: Instance;
   instanceData: InstanceData;
+  instConnInfos: InstanceConnectionInfo[];
 
-  instanceSubscription: Subscription;
-  dataSubscription: Subscription;
+  instanceSub: Subscription;
+  dataSub: Subscription;
+  connectionInfoSub: Subscription;
 
   public dataStateEnum = DataState;
   dataState: DataState;
   dataFetchTimeout: number | null = null;
 
-  constructor(
-    private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
     private instanceService: InstanceService,
-    private instanceDataService: InstanceDataService) { }
+    private instanceDataService: InstanceDataService,
+    private instConnInfoService: InstanceConnectionInfoService) { }
 
   ngOnInit() {
     this.route.params.subscribe(
@@ -36,25 +40,43 @@ export class InstanceDetailComponent {
         this.instanceId = params['id'];
         this.updateInstance();
 
-        if (this.dataSubscription != null)
-          this.dataSubscription.unsubscribe();
+        // Unsubscribe from previous instance data and connection info
+        if (this.dataSub != null)
+          this.dataSub.unsubscribe();
+        if (this.connectionInfoSub != null)
+          this.connectionInfoSub.unsubscribe();
+
         // Getting instance data
         let initInstanceData = this.instanceDataService.getInstanceData(this.instanceId);
         if (initInstanceData != null)
           this.instanceData = initInstanceData;
         // Subscribe to updates of instance data
-        this.dataSubscription = this.instanceDataService.instanceDataChanged.subscribe(
+        this.dataSub = this.instanceDataService.instanceData$.subscribe(
           (data: InstanceData) => {
             if (this.instanceId != data.instanceId)
               return;
             this.instanceData = data;
           }
         );
+
+        // Getting instance connetion info
+        let initInstConnInfo = this.instConnInfoService.getInstanceConnectionInfos(this.instanceId);
+        if (initInstConnInfo != null) {
+          this.instConnInfos = initInstConnInfo;
+        }
+        // Subscribe to updates of instance connection info
+        this.connectionInfoSub = this.instConnInfoService.instConnInfo$.subscribe(
+          (connInfo: { instanceId: number, instConnInfos: InstanceConnectionInfo[] }) => {
+            if (connInfo.instanceId != this.instanceId)
+              return;
+            this.instConnInfos = connInfo.instConnInfos;
+          }
+        );
       }
     );
 
     // Subscribe to updates of instance
-    this.instanceSubscription = this.instanceService.instancesChanged.subscribe(
+    this.instanceSub = this.instanceService.instances$.subscribe(
       (instances: Instance[]) => {
         this.updateInstance();
       }
@@ -71,7 +93,7 @@ export class InstanceDetailComponent {
       this.dataFetchTimeout = window.setTimeout(() => {
         this.dataState = DataState.Failed;
         this.dataFetchTimeout = null;
-      }, 5000)
+      }, 5000);
       return;
     }
 
@@ -100,8 +122,13 @@ export class InstanceDetailComponent {
     return this.instanceData.ramLoad / this.instanceData.maxRam * 100 + '%';
   }
 
+  onDelete() {
+    // TODO: Implement deleting
+  }
+
   ngOnDestroy() {
-    this.instanceSubscription.unsubscribe();
-    this.dataSubscription.unsubscribe();
+    this.instanceSub.unsubscribe();
+    this.dataSub.unsubscribe();
+    this.connectionInfoSub.unsubscribe();
   }
 }
