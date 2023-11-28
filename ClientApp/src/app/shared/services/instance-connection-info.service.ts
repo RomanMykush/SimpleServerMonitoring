@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { InstanceConnectionInfo } from '../models/instance-connection-info.model';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, share } from 'rxjs';
 import { InstanceService } from './instance.service';
 import { HttpClient } from '@angular/common/http';
 import { Instance } from '../models/instance.model';
@@ -31,6 +31,28 @@ export class InstanceConnectionInfoService {
     if (!this.instConnInfos.hasOwnProperty(instanceId))
       return null;
     return this.instConnInfos[instanceId];
+  }
+
+  deleteConnectionInfo(id: number) {
+    let instanceId = -1;
+    let index = -1;
+
+    for (let currentId of Object.getOwnPropertyNames(this.instConnInfos).map(Number)) {
+      index = this.instConnInfos[currentId].findIndex((element) => element.id == id);
+      if (index > -1) {
+        instanceId = currentId;
+        break;
+      }
+    }
+    if (instanceId == -1)
+      return null;
+
+    let observable = this.http.delete('api/InstanceConnections/' + id).pipe(share());
+    observable.subscribe(() => {
+      this.instConnInfos[instanceId].splice(index, 1);
+      this.instConnInfo$.next({ instanceId: instanceId, instConnInfos: this.instConnInfos[instanceId].slice() });
+    });
+    return observable;
   }
 
   fetchConnectionInfos(instances: Instance[]) {

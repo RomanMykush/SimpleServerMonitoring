@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { InstanceConnectionInfo } from 'src/app/shared/models/instance-connection-info.model';
+import { InstanceConnectionInfoService } from 'src/app/shared/services/instance-connection-info.service';
 
 @Component({
   selector: 'app-connection-detail',
@@ -9,11 +10,13 @@ import { InstanceConnectionInfo } from 'src/app/shared/models/instance-connectio
 export class ConnectionDetailComponent {
   @Input() connectionInfo: InstanceConnectionInfo;
 
+  constructor(private instConnInfoService: InstanceConnectionInfoService) { }
+
   onShowSecret() {
     // TODO: Implement secret showing
   }
 
   onDelete() {
-    // TODO: Implement deleting
+    this.instConnInfoService.deleteConnectionInfo(this.connectionInfo.id);
   }
 }

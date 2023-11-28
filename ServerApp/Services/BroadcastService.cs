@@ -23,16 +23,16 @@ public class BroadcastService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Start of BroadcastService execution");
-
-        using IServiceScope scope = _serviceProvider.CreateScope();
-        IInstanceService instanceService = scope.ServiceProvider.GetRequiredService<IInstanceService>();
-        IInstanceConnectionService instanceConnectionService = scope.ServiceProvider.GetRequiredService<IInstanceConnectionService>();
-        IConnectionMethodService connectionMethodService = scope.ServiceProvider.GetRequiredService<IConnectionMethodService>();
-        IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub = scope.ServiceProvider.GetRequiredService<IHubContext<InstanceDataHub, IInstanceDataClient>>();
-
+        
         while (await _timer.WaitForNextTickAsync(stoppingToken)
             && !stoppingToken.IsCancellationRequested)
         {
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            IInstanceService instanceService = scope.ServiceProvider.GetRequiredService<IInstanceService>();
+            IInstanceConnectionService instanceConnectionService = scope.ServiceProvider.GetRequiredService<IInstanceConnectionService>();
+            IConnectionMethodService connectionMethodService = scope.ServiceProvider.GetRequiredService<IConnectionMethodService>();
+            IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub = scope.ServiceProvider.GetRequiredService<IHubContext<InstanceDataHub, IInstanceDataClient>>();
+
             await StartTransferingData(instanceService,
                 instanceConnectionService,
                 connectionMethodService,
