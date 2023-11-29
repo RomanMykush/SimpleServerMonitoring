@@ -3,11 +3,7 @@
     <div class="d-flex justify-content-between">
       <h4 class="card-title">{{instance.name}}</h4>
       <div class="d-flex text-end">
-        <!-- TODO: Implement proper pipeline for image selection -->
-        <h5 class="mt-auto pe-2">
-          <img class="align-top os-image" src="assets/os_images/default_placeholder.png" alt="">
-          {{instance.os}}
-        </h5>
+        <app-os-image class="mt-1 pe-2" [osName]="instance.os" [fontSize]="'1.25rem'"></app-os-image>
         <mat-menu #detailMenu="matMenu">
           <button routerLink="{{instance.id}}" mat-menu-item>Show details</button>
           <button routerLink="{{instance.id}}/edit" mat-menu-item>Edit</button>

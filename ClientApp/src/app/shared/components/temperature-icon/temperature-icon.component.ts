@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Temperature } from '../../temperature';
+import { Temperature } from '../../enums/temperature';
+import { EnumHelper } from '../../utils';
 
 @Component({
   selector: 'app-temperature-icon',
-  templateUrl: './temperature-icon.component.html',
-  styles: ['']
+  templateUrl: './temperature-icon.component.html'
 })
 export class TemperatureIconComponent implements OnChanges {
   @Input() degrees: number;
@@ -12,9 +12,8 @@ export class TemperatureIconComponent implements OnChanges {
   temperature: Temperature;
 
   ngOnChanges(changes: SimpleChanges) {
-    let keys = Object.keys(Temperature)
-      .filter(key => !isNaN(Number(key)))
-      .map(key => parseFloat(key))
+    let keys = EnumHelper.getKeys(Temperature)
+      .map(key => parseFloat(key));
 
     // Assign and remove first element
     this.temperature = keys[0];

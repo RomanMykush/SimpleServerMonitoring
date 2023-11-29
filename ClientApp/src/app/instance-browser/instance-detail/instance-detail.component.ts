@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DataState } from 'src/app/shared/data-state';
+import { DataState } from 'src/app/shared/enums/data-state';
 import { InstanceConnectionInfo } from 'src/app/shared/models/instance-connection-info.model';
 import { InstanceData } from 'src/app/shared/models/instance-data.model';
 import { Instance } from 'src/app/shared/models/instance.model';

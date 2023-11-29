@@ -6,11 +6,7 @@
         <h3>{{instance.name}}</h3>
       </div>
       <div class="col-auto">
-        <!-- TODO: Implement proper pipeline for image selection -->
-        <h4 class="text-end mt-auto">
-          <img class="align-top os-image" src="assets/os_images/default_placeholder.png" alt="">
-          {{instance.os}}
-        </h4>
+        <app-os-image [osName]="instance.os"></app-os-image>
       </div>
       <div class="col-auto">
         <mat-menu #detailMenu="matMenu" xPosition="before">

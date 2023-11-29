@@ -18,6 +18,7 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
 import { LoadingFailComponent } from './shared/components/loading-fail/loading-fail.component';
 import { ConnectionDetailComponent } from './instance-browser/instance-detail/connection-detail/connection-detail.component';
 import { ConnectionEditComponent } from './instance-browser/instance-edit/connection-edit/connection-edit.component';
+import { OsImageComponent } from './shared/components/os-image/os-image.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { ConnectionEditComponent } from './instance-browser/instance-edit/connec
     LoadingSpinnerComponent,
     LoadingFailComponent,
     ConnectionDetailComponent,
-    ConnectionEditComponent
+    ConnectionEditComponent,
+    OsImageComponent
   ],
   imports: [
     BrowserModule,
