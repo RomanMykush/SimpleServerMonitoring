@@ -17,7 +17,7 @@ export class InstanceConnectionInfoService {
 
   constructor(private instanceService: InstanceService,
     private http: HttpClient) {
-    let initInstances = this.instanceService.getInstances();
+    const initInstances = this.instanceService.getInstances();
     this.fetchConnectionInfos(initInstances);
 
     this.subscription = this.instanceService.instances$.subscribe(
@@ -47,12 +47,31 @@ export class InstanceConnectionInfoService {
     return { instanceId: instanceId, index: index };
   }
 
-  deleteConnectionInfo(id: number) {
-    let pos = this.findConnectionInfoIndex(id);
+  updateConnectionInfo(instConnInfo: InstanceConnectionInfo) {
+    const { id, ...instConnInfoDto } = instConnInfo;
+
+    const pos = this.findConnectionInfoIndex(id);
     if (pos.instanceId == -1)
       return null;
 
-    let observable = this.http.delete('api/InstanceConnections/' + id).pipe(share());
+    const observable = this.http.put(
+      "api/InstanceConnections/" + id,
+      instConnInfoDto
+    ).pipe(share());
+
+    observable.subscribe(() => {
+      this.instConnInfos[pos.instanceId][pos.index] = instConnInfo;
+      this.instConnInfo$.next({ instanceId: pos.instanceId, instConnInfos: this.instConnInfos[pos.instanceId].slice() });
+    });
+    return observable;
+  }
+
+  deleteConnectionInfo(id: number) {
+    const pos = this.findConnectionInfoIndex(id);
+    if (pos.instanceId == -1)
+      return null;
+
+    const observable = this.http.delete('api/InstanceConnections/' + id).pipe(share());
     observable.subscribe(() => {
       this.instConnInfos[pos.instanceId].splice(pos.index, 1);
       this.instConnInfo$.next({ instanceId: pos.instanceId, instConnInfos: this.instConnInfos[pos.instanceId].slice() });

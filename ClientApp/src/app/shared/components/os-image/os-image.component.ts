@@ -8,6 +8,7 @@ import { OperatingSystemEnumHelper } from '../../utils';
 export class OsImageComponent implements OnInit, OnChanges {
   @Input() osName: string;
   @Input() fontSize: string = "1.5rem";
+  @Input() hideText: boolean = false;
 
   imgPath: string;
 

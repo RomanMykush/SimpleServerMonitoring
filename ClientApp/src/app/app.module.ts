@@ -19,6 +19,7 @@ import { LoadingFailComponent } from './shared/components/loading-fail/loading-f
 import { ConnectionDetailComponent } from './instance-browser/instance-detail/connection-detail/connection-detail.component';
 import { ConnectionEditComponent } from './instance-browser/instance-edit/connection-edit/connection-edit.component';
 import { OsImageComponent } from './shared/components/os-image/os-image.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { OsImageComponent } from './shared/components/os-image/os-image.componen
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

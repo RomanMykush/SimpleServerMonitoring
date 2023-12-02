@@ -1,1 +1,46 @@
-<p>instance-edit works!</p>
+<div class="container-fluid main-container h-100" [ngSwitch]="dataState">
+  <div *ngSwitchCase="dataStateEnum.Available">
+    <form (ngSubmit)="onSubmit(editForm)" #editForm="ngForm">
+      <!-- Basic instance info -->
+      <div class="d-flex">
+        <h3 class="flex-fill">Instance info</h3>
+        <button type="button" mat-icon-button class="h4-icon-button my-auto mb-3" routerLink="">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="row mb-2">
+        <div class="col">
+          <input type="text" placeholder="Name" class="form-control" [ngModel]="instance?.name" name="name" required>
+        </div>
+        <div class="col-auto">
+          <div class="d-flex">
+            <app-os-image class="my-auto pe-2" [osName]="osName.value" [hideText]="true"></app-os-image>
+            <input type="text" placeholder="OS Name" class="form-control" style="width: 7.5rem;" [ngModel]="instance?.os"
+              name="osName" required #osName="ngModel">
+          </div>
+        </div>
+      </div>
+      <input type="text" placeholder="Description" class="form-control mb-3" [ngModel]="instance?.description"
+        name="description">
+
+      <!-- Instance connection info -->
+      <h3>Connection</h3>
+      <div class="mb-3">
+        <div *ngFor="let connInfo of instConnInfos; let i = index">
+          <app-connection-edit [initData]="connInfo" (valueChanged)="onConnectionSubmit($event)"
+            (canceled)="onConnectionEditCancel(i)" (deleted)="onConnectionDelete(i)"></app-connection-edit>
+        </div>
+      </div>
+
+      <button [disabled]="!editForm.valid || !checkValidityOfSubforms()" type="submit" class="btn btn-primary flex-fill">Submit</button>
+    </form>
+  </div>
+
+  <div *ngSwitchCase="dataStateEnum.Loading" class="h-100">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+
+  <div *ngSwitchCase="dataStateEnum.Failed" class="h-100">
+    <app-loading-fail></app-loading-fail>
+  </div>
+</div>

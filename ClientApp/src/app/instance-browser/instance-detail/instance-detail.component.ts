@@ -48,7 +48,7 @@ export class InstanceDetailComponent {
           this.connectionInfoSub.unsubscribe();
 
         // Getting instance data
-        let initInstanceData = this.instanceDataService.getInstanceData(this.instanceId);
+        const initInstanceData = this.instanceDataService.getInstanceData(this.instanceId);
         if (initInstanceData != null)
           this.instanceData = initInstanceData;
         // Subscribe to updates of instance data
@@ -61,7 +61,7 @@ export class InstanceDetailComponent {
         );
 
         // Getting instance connetion info
-        let initInstConnInfo = this.instConnInfoService.getInstanceConnectionInfos(this.instanceId);
+        const initInstConnInfo = this.instConnInfoService.getInstanceConnectionInfos(this.instanceId);
         if (initInstConnInfo != null) {
           this.instConnInfos = initInstConnInfo;
         }
@@ -86,7 +86,7 @@ export class InstanceDetailComponent {
   }
 
   updateInstance() {
-    let instanceResult = this.instanceService.getInstance(this.instanceId);
+    const instanceResult = this.instanceService.getInstance(this.instanceId);
     if (!instanceResult) {
       if (this.dataState == DataState.Failed)
         return;
@@ -125,7 +125,7 @@ export class InstanceDetailComponent {
   }
 
   onDelete() {
-    let observable = this.instanceService.deleteInstance(this.instance.id);
+    const observable = this.instanceService.deleteInstance(this.instance.id);
     this.dataState = DataState.Loading;
     if (!observable)
       return;

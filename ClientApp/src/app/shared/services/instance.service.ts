@@ -30,13 +30,32 @@ export class InstanceService {
     this.instances$.next(this.instances.slice());
   }
 
-  deleteInstance(id: number) {
-    let index = this.instances.findIndex((element) => element.id == id);
-    if (index == -1)
+  updateInstance(instance: Instance) {
+    const { id, ...instanceDto } = instance;
+    if (!this.checkIfExists(id))
       return null;
 
-    let observable = this.http.delete('api/Instances/' + id).pipe(share());
+    const observable = this.http.put(
+      "api/Instances/" + id,
+      instanceDto
+    ).pipe(share());
+
     observable.subscribe(() => {
+      const index = this.instances.findIndex((element) => element.id == id);
+      this.instances[index] = instance;
+      this.instances$.next(this.instances.slice());
+    });
+    return observable;
+  }
+
+  deleteInstance(id: number) {
+    if (!this.checkIfExists(id))
+      return null;
+
+    const observable = this.http.delete('api/Instances/' + id).pipe(share());
+
+    observable.subscribe(() => {
+      const index = this.instances.findIndex((element) => element.id == id);
       this.instances.splice(index, 1);
       this.instances$.next(this.instances.slice());
     });
@@ -45,5 +64,9 @@ export class InstanceService {
 
   fetchInstances() {
     return this.http.get<Instance[]>('api/Instances').pipe(share());
+  }
+
+  checkIfExists(id: number) {
+    return this.instances.some((element) => element.id == id);
   }
 }
