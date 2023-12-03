@@ -15,8 +15,8 @@
         <div class="col-auto">
           <div class="d-flex">
             <app-os-image class="my-auto pe-2" [osName]="osName.value" [hideText]="true"></app-os-image>
-            <input type="text" placeholder="OS Name" class="form-control" style="width: 7.5rem;" [ngModel]="instance?.os"
-              name="osName" required #osName="ngModel">
+            <input type="text" placeholder="OS Name" class="form-control" style="width: 7.5rem;"
+              [ngModel]="instance?.os" name="osName" required #osName="ngModel">
           </div>
         </div>
       </div>
@@ -24,15 +24,35 @@
         name="description">
 
       <!-- Instance connection info -->
-      <h3>Connection</h3>
-      <div class="mb-3">
-        <div *ngFor="let connInfo of instConnInfos; let i = index">
-          <app-connection-edit [initData]="connInfo" (valueChanged)="onConnectionSubmit($event)"
-            (canceled)="onConnectionEditCancel(i)" (deleted)="onConnectionDelete(i)"></app-connection-edit>
+      <div *ngIf="instConnInfos?.length">
+        <h3>Edit connections</h3>
+        <div class="mb-3 d-grid gap-3">
+          <div *ngFor="let connInfo of instConnInfos; let i = index">
+            <app-connection-edit [initData]="connInfo" (valueChanged)="onConnectionSubmit($event)"
+              (canceled)="onConnectionEditCancel(i)" (deleted)="onConnectionDelete(i)"></app-connection-edit>
+          </div>
         </div>
       </div>
+      <div class="d-flex">
+        <h3>New connections</h3>
+        <button type="button" (click)="onNewConnectionCreated()" mat-icon-button class="h4-icon-button mt-1 ms-2">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="newInstConnInfos?.length; else noNewConnections">
+        <div class="mb-3 d-grid gap-3">
+          <div *ngFor="let connInfo of newInstConnInfos; let i = index">
+            <app-connection-edit [initData]="connInfo" [isNew]="true" (valueChanged)="onNewConnectionSubmit($event)"
+              (deleted)="onNewConnectionDelete(i)"></app-connection-edit>
+          </div>
+        </div>
+      </div>
+      <ng-template #noNewConnections>
+        <p>No new connection were added...</p>
+      </ng-template>
 
-      <button [disabled]="!editForm.valid || !checkValidityOfSubforms()" type="submit" class="btn btn-primary flex-fill">Submit</button>
+      <button [disabled]="!editForm.valid || !checkValidityOfSubforms()" type="submit"
+        class="btn btn-primary flex-fill">Apply changes</button>
     </form>
   </div>
 

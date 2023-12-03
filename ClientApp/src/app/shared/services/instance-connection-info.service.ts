@@ -47,6 +47,26 @@ export class InstanceConnectionInfoService {
     return { instanceId: instanceId, index: index };
   }
 
+  createConnectionInfo(instanceId: number, instConnInfo: InstanceConnectionInfo) {
+    const { id, ...instConnInfoDto } = instConnInfo;
+
+    const observable = this.http.post<InstanceConnectionInfo>(
+      "api/InstanceConnections/Instance/" + instanceId,
+      instConnInfoDto
+    ).pipe(share());
+
+    observable.subscribe((res: InstanceConnectionInfo) => {
+      this.removeSecret(res);
+
+      if (!this.instConnInfos.hasOwnProperty(instanceId))
+        this.instConnInfos[instanceId] = [];
+      
+      this.instConnInfos[instanceId].push(res);
+      this.instConnInfo$.next({ instanceId: instanceId, instConnInfos: this.instConnInfos[instanceId].slice() });
+    });
+    return observable;
+  }
+
   updateConnectionInfo(instConnInfo: InstanceConnectionInfo) {
     const { id, ...instConnInfoDto } = instConnInfo;
 
@@ -60,6 +80,8 @@ export class InstanceConnectionInfoService {
     ).pipe(share());
 
     observable.subscribe(() => {
+      this.removeSecret(instConnInfo);
+
       this.instConnInfos[pos.instanceId][pos.index] = instConnInfo;
       this.instConnInfo$.next({ instanceId: pos.instanceId, instConnInfos: this.instConnInfos[pos.instanceId].slice() });
     });
@@ -90,5 +112,11 @@ export class InstanceConnectionInfoService {
 
   fetchFullConnectionInfo(id: number) {
     return this.http.get<InstanceConnectionInfo>('api/InstanceConnections/' + id).pipe(share());
+  }
+
+  removeSecret(connInfo: InstanceConnectionInfo) {
+    connInfo.sshPassword = null;
+    connInfo.sshPrivateKey = null;
+    connInfo.sshKeyPassphrase = null;
   }
 }

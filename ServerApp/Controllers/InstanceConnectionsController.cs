@@ -33,7 +33,7 @@ public class InstanceConnectionsController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<InstanceConnectionDto>> GetInstanceConnection(long id)
+    public async Task<ActionResult<FullInstanceConnectionDto>> GetInstanceConnection(long id)
     {
         var instanceConnection = await _service.GetInstanceConnectionAsync(id);
 
@@ -64,7 +64,7 @@ public class InstanceConnectionsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<InstanceConnectionDto>> PostInstanceConnection(long instanceId, NewInstanceConnectionDto dto)
+    public async Task<ActionResult<FullInstanceConnectionDto>> PostInstanceConnection(long instanceId, NewInstanceConnectionDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.IP))
             return BadRequest(new ErrorDto() { Message = "InstanceConnection.IP cannot be null or empty" });

@@ -3,8 +3,8 @@ export class InstanceConnectionInfo {
     public id: number,
     public ip: string,
     public sshUsername: string,
-    public sshPassword: string,
-    public sshPrivateKey: string,
-    public sshKeyPassphrase: string
+    public sshPassword: string | null,
+    public sshPrivateKey: string | null,
+    public sshKeyPassphrase: string | null
   ) { }
 }

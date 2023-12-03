@@ -40,7 +40,12 @@ export class InstanceEditComponent {
   dataState: DataState;
   dataFetchTimeout: number | null = null;
 
-  instConnInfoForms: Subform[];
+  editConnInfoForms: Subform[];
+
+  newInstConnInfos: InstanceConnectionInfo[];
+  appendConnInfoForms: Subform[];
+
+  markedDeleted: number[];
 
   constructor(private router: Router,
     private route: ActivatedRoute,
@@ -53,9 +58,14 @@ export class InstanceEditComponent {
         this.dataState = DataState.Loading;
         this.instanceId = params['id'];
 
+        // Clear previous data
         this.instance = null;
         this.instConnInfos = null;
-        this.instConnInfoForms = [];
+        this.editConnInfoForms = [];
+
+        this.newInstConnInfos = [];
+        this.appendConnInfoForms = [];
+        this.markedDeleted = [];
 
         if (this.instanceId == null) {
           this.dataState = DataState.Available;
@@ -126,29 +136,59 @@ export class InstanceEditComponent {
       value.osName
     );
 
-    let isntanceObservable;
+    let instanceObservable;
     if (this.instanceId == null)
-      // TODO: Implement creation of instances
-      throw new Error('Creation of instances was not implemented.');
+      instanceObservable = this.instanceService.createInstance(formInstance);
     else
-      isntanceObservable = this.instanceService.updateInstance(formInstance);
+      instanceObservable = this.instanceService.updateInstance(formInstance);
 
-    isntanceObservable!.pipe(
-      switchMap(() => {
-        if (!this.instConnInfoForms?.length)
-          return of(null);
-
-        // Update edited instance connections
+    instanceObservable!.pipe(
+      switchMap(res => {
         let observables: Observable<unknown>[] = [];
 
-        this.instConnInfoForms.forEach(element => {
+        let currentIsntanceId = this.instanceId;
+        if (!this.instanceId) {
+          const resInstance = res as Instance;
+          currentIsntanceId = resInstance.id;
+        }
+
+        // Create new connections
+        this.appendConnInfoForms.forEach(form => {
           const instConnInfo = new InstanceConnectionInfo(
-            element.id,
-            element.value.ip,
-            element.value.username,
-            element.value.credentials.password,
-            element.value.credentials.key,
-            element.value.credentials.passphrase);
+            form.id,
+            form.value.ip,
+            form.value.username,
+            form.value.credentials.password,
+            form.value.credentials.key,
+            form.value.credentials.passphrase);
+
+          const observable = this.instConnInfoService.createConnectionInfo(currentIsntanceId, instConnInfo);
+          if (observable != null)
+            observables.push(observable);
+        });
+
+        // Delete marked instance connections
+        this.markedDeleted.forEach(currentId => {
+          const observable = this.instConnInfoService.deleteConnectionInfo(currentId);
+          if (observable != null)
+            observables.push(observable);
+        });
+
+        // Update edited instance connections
+        if (!this.editConnInfoForms?.length)
+          observables.push(of(null));
+
+        this.editConnInfoForms?.forEach(form => {
+          if (this.markedDeleted.some((markElem) => markElem == form.id))
+            return;
+
+          const instConnInfo = new InstanceConnectionInfo(
+            form.id,
+            form.value.ip,
+            form.value.username,
+            form.value.credentials.password,
+            form.value.credentials.key,
+            form.value.credentials.passphrase);
 
           const observable = this.instConnInfoService.updateConnectionInfo(instConnInfo);
           if (observable != null)
@@ -160,19 +200,20 @@ export class InstanceEditComponent {
     ).subscribe(() => this.router.navigate(['']));
   }
 
-  // Subforms methods
+  // Existing connection methods
 
   checkValidityOfSubforms() {
-    return !this.instConnInfoForms.some((element) => !element.valid);
+    return !this.editConnInfoForms.some((element) => !element.valid && !this.markedDeleted.some((markElem) => markElem == element.id))
+      && !this.appendConnInfoForms.some((element) => element.value == null || !element.valid);
   }
 
   onConnectionSubmit(form: Subform) {
-    const index = this.instConnInfoForms.findIndex((element) => element.id == form.id);
+    const index = this.editConnInfoForms.findIndex((element) => element.id == form.id);
     if (index == -1) {
-      this.instConnInfoForms.push(form);
+      this.editConnInfoForms.push(form);
       return;
     }
-    this.instConnInfoForms[index] = form;
+    this.editConnInfoForms[index] = form;
   }
 
   onConnectionEditCancel(index: number) {
@@ -180,27 +221,55 @@ export class InstanceEditComponent {
       return;
 
     const id = this.instConnInfos[index].id;
-    this.deleteSubform(id);
+    // Remove deleted mark
+    const deletedIndex = this.markedDeleted.findIndex((element) => element == id);
+    if (deletedIndex != -1)
+      this.markedDeleted.splice(deletedIndex, 1);
+    // Delete changes
+    this.deleteConnSubform(id);
   }
 
   onConnectionDelete(index: number) {
     if (this.instConnInfos == null)
       return;
-
-    const id = this.instConnInfos[index].id;
-    this.deleteSubform(id);
-    // Delete component
-    this.instConnInfos.splice(index, 1);
+    this.markedDeleted.push(this.instConnInfos[index].id);
   }
 
-  onConnectionCreated() {
-    // TODO: Implement connection creation form
-  }
-
-  deleteSubform(id: number) {
-    const formIndex = this.instConnInfoForms.findIndex((element) => element.id == id);
+  deleteConnSubform(id: number) {
+    const formIndex = this.editConnInfoForms.findIndex((element) => element.id == id);
     if (formIndex != -1) {
-      this.instConnInfoForms.splice(formIndex, 1);
+      this.editConnInfoForms.splice(formIndex, 1);
+    }
+  }
+
+  // New connection methods
+
+  onNewConnectionCreated() {
+    let newId = -1;
+    if (this.newInstConnInfos.length)
+      newId = Math.min(...this.newInstConnInfos.map(element => element.id)) - 1;
+    const newConnInfo = new InstanceConnectionInfo(newId, '', '', null, null, null);
+
+    this.newInstConnInfos.push(newConnInfo);
+    this.appendConnInfoForms.push(new Subform(newId, false, null));
+  }
+
+  onNewConnectionSubmit(form: Subform) {
+    const index = this.appendConnInfoForms.findIndex((element) => element.id == form.id);
+    this.appendConnInfoForms[index] = form;
+  }
+
+  onNewConnectionDelete(index: number) {
+    const id = this.newInstConnInfos[index].id;
+    this.deleteNewConnSubform(id);
+    // Delete component
+    this.newInstConnInfos.splice(index, 1);
+  }
+
+  deleteNewConnSubform(id: number) {
+    const formIndex = this.appendConnInfoForms.findIndex((element) => element.id == id);
+    if (formIndex != -1) {
+      this.appendConnInfoForms.splice(formIndex, 1);
     }
   }
 

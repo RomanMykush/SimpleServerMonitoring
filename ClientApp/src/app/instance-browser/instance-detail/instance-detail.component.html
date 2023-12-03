@@ -53,9 +53,11 @@
     </div>
     <!-- Instance connection info -->
     <div>
-      <h3>Connection</h3>
-      <div *ngFor="let connInfo of instConnInfos">
-        <app-connection-detail [connectionInfo]="connInfo"></app-connection-detail>
+      <h3>Connections</h3>
+      <div class="d-grid gap-2">
+        <div *ngFor="let connInfo of instConnInfos">
+          <app-connection-detail [connectionInfo]="connInfo"></app-connection-detail>
+        </div>
       </div>
     </div>
   </div>

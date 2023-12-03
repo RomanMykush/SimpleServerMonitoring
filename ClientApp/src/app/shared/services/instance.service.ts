@@ -30,6 +30,21 @@ export class InstanceService {
     this.instances$.next(this.instances.slice());
   }
 
+  createInstance(instance: Instance) {
+    const { id, ...instanceDto } = instance;
+
+    const observable = this.http.post<Instance>(
+      "api/Instances",
+      instanceDto
+    ).pipe(share());
+
+    observable.subscribe((res: Instance) => {
+      this.instances.push(res);
+      this.instances$.next(this.instances.slice());
+    });
+    return observable;
+  }
+
   updateInstance(instance: Instance) {
     const { id, ...instanceDto } = instance;
     if (!this.checkIfExists(id))

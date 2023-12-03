@@ -14,10 +14,12 @@ export class ConnectionEditComponent {
   @Output() deleted = new EventEmitter();
 
   @Input() initData: InstanceConnectionInfo;
+  @Input() isNew: boolean = false;
 
   @ViewChild('editForm', { static: true }) editForm: NgForm;
 
-  isModified: boolean = false;
+  markedModified: boolean = false;
+  markedDeleted: boolean = false;
 
   constructor(private instConnInfoService: InstanceConnectionInfoService) { }
 
@@ -28,20 +30,23 @@ export class ConnectionEditComponent {
       value.credentials.password || value.credentials.key ? !!this.editForm.valid : false,
       value
     );
-    this.isModified = true;
+    this.markedModified = true;
     this.valueChanged.emit(output);
   }
 
   onCancelEdit() {
     this.editForm.reset({ ip: this.initData.ip, username: this.initData.sshUsername });
 
-    this.isModified = false;
+    this.markedModified = false;
+    this.markedDeleted = false;
     this.canceled.emit();
   }
 
   onDelete() {
-    this.instConnInfoService.deleteConnectionInfo(this.initData.id)?.subscribe(() => {
-      this.deleted.emit();
-    });
+    if (!this.isNew)
+      this.editForm.reset({ ip: this.initData.ip, username: this.initData.sshUsername });
+
+    this.markedDeleted = true;
+    this.deleted.emit();
   }
 }

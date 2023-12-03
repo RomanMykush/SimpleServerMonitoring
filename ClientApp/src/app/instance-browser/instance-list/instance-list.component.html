@@ -2,7 +2,12 @@
   <div [ngStyle]="{margin: '0 ' + rowMargin / 2 + 'px'}">
     <div class="row mx-auto">
       <div class="col">
-        <h3>Server list</h3>
+        <div class="d-flex">
+          <h3>Server list</h3>
+          <button mat-icon-button class="h4-icon-button mt-1 ms-2" routerLink="new">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </div>
       <div class="col-auto mt-1">
         <h5>Filter by ▼</h5>
