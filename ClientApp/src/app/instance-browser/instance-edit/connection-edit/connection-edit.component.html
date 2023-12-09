@@ -30,8 +30,8 @@
         <input type="text" placeholder="Password" class="form-control" [ngModel]="initData.sshPassword" name="password"
           #password="ngModel" (ngModelChange)="onChange()" [disabled]="markedDeleted">
         <div class="d-flex gap-2">
-          <input type="text" placeholder="Key" class="form-control" [ngModel]="initData.sshPrivateKey" name="key"
-            #key="ngModel" (ngModelChange)="onChange()" [disabled]="markedDeleted">
+          <textarea placeholder="Key" class="form-control" style="height: 0;" [ngModel]="initData.sshPrivateKey"
+            name="key" #key="ngModel" (ngModelChange)="onChange()" [disabled]="markedDeleted"></textarea>
           <input type="text" placeholder="Passphrase" class="form-control" [ngModel]="initData.sshKeyPassphrase"
             name="passphrase" (ngModelChange)="onChange()" [disabled]="markedDeleted">
         </div>

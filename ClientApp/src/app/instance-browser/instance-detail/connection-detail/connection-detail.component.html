@@ -18,9 +18,9 @@
         <h5 class="pe-2">Password: </h5>
         <input class="flex-fill" type="text" value="{{fullConnectionInfo.sshPassword}}" readonly>
       </div>
-      <div *ngIf="fullConnectionInfo.sshPrivateKey" class="d-flex">
+      <div *ngIf="fullConnectionInfo.sshPrivateKey" class="d-flex align-items-center">
         <h5 class="pe-2">Private key: </h5>
-        <input class="flex-fill" type="text" value="{{fullConnectionInfo.sshPrivateKey}}" readonly>
+        <textarea class="flex-fill" value="{{fullConnectionInfo.sshPrivateKey}}" readonly></textarea>
       </div>
       <div *ngIf="fullConnectionInfo.sshKeyPassphrase" class="d-flex">
         <h5 class="pe-2">Key passphrase: </h5>
