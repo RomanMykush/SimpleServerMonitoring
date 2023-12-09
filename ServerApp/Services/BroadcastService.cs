@@ -12,8 +12,14 @@ public class BroadcastService : BackgroundService
 {
     private readonly ConcurrentDictionary<long, Task> DataFetchTasks = new();
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(2));
-    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<BroadcastService> _logger;
+    private readonly IServiceProvider _serviceProvider;
+    
+    // Services that are created from new scope every _timer tick
+    private IInstanceService _instanceService = null!;
+    private IInstanceConnectionService _instanceConnectionService = null!;
+    private IConnectionMethodService _connectionMethodService = null!;
+    private IHubContext<InstanceDataHub, IInstanceDataClient> _instanceDataHub = null!;
     public BroadcastService(IServiceProvider serviceProvider,
         ILogger<BroadcastService> logger)
     {
@@ -22,44 +28,45 @@ public class BroadcastService : BackgroundService
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Start of BroadcastService execution");
-        
+        _logger.LogInformation($"Start of {typeof(BroadcastService).Name} execution");
+
         while (await _timer.WaitForNextTickAsync(stoppingToken)
             && !stoppingToken.IsCancellationRequested)
         {
             using IServiceScope scope = _serviceProvider.CreateScope();
-            IInstanceService instanceService = scope.ServiceProvider.GetRequiredService<IInstanceService>();
-            IInstanceConnectionService instanceConnectionService = scope.ServiceProvider.GetRequiredService<IInstanceConnectionService>();
-            IConnectionMethodService connectionMethodService = scope.ServiceProvider.GetRequiredService<IConnectionMethodService>();
-            IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub = scope.ServiceProvider.GetRequiredService<IHubContext<InstanceDataHub, IInstanceDataClient>>();
-
-            await StartTransferingData(instanceService,
-                instanceConnectionService,
-                connectionMethodService,
-                instanceDataHub);
+            CreateNewServices(scope);
+            await StartTransferingData();
         }
     }
 
-    public async Task StartTransferingData(IInstanceService instanceService,
-        IInstanceConnectionService instanceConnectionService,
-        IConnectionMethodService connectionMethodService,
-        IHubContext<InstanceDataHub, IInstanceDataClient> instanceDataHub)
+    private void CreateNewServices(IServiceScope scope)
     {
-        List<long> instanceIds = (await instanceService.GetInstancesAsync())!.Select(i => i.Id).ToList();
+        _instanceService = scope.ServiceProvider.GetRequiredService<IInstanceService>();
+        _instanceConnectionService = scope.ServiceProvider.GetRequiredService<IInstanceConnectionService>();
+        _connectionMethodService = scope.ServiceProvider.GetRequiredService<IConnectionMethodService>();
+        _instanceDataHub = scope.ServiceProvider.GetRequiredService<IHubContext<InstanceDataHub, IInstanceDataClient>>();
+    }
+
+    public async Task StartTransferingData()
+    {
+        List<long> instanceIds = (await _instanceService.GetInstancesAsync())!.Select(i => i.Id).ToList();
 
         foreach (var currentId in instanceIds)
         {
-            _logger.LogTrace($"Start trying to get data from Instance #{currentId}");
+            _logger.LogTrace($"Start trying to get data from {typeof(Instance).Name} #{currentId}");
 
             if (DataFetchTasks.ContainsKey(currentId) && !DataFetchTasks[currentId].IsCompleted)
             {
-                _logger.LogTrace($"Data fetching process is still in progress from Instance #{currentId}");
+                _logger.LogTrace($"Data fetching process is still in progress from {typeof(Instance).Name} #{currentId}");
                 continue;
             }
 
-            var instanceConnections = await instanceConnectionService.GetInstanceConnectionsAsync(currentId);
+            var instanceConnections = await _instanceConnectionService.GetInstanceConnectionsAsync(currentId);
             if (instanceConnections == null || !instanceConnections.Any())
+            {
+                _logger.LogTrace($"No connection info for {typeof(Instance).Name} #{currentId} was found");
                 continue;
+            }
 
             // Create Task of data transfer
             var task = Task.Run(async () =>
@@ -67,16 +74,15 @@ public class BroadcastService : BackgroundService
                 try
                 {
                     // Fetch data from instance
-                    var data = FetchData(instanceConnections,
-                        connectionMethodService);
+                    var data = FetchData(instanceConnections);
                     // Set instance id
                     data.InstanceId = currentId;
                     // Broadcast data to clients
-                    await instanceDataHub.Clients.All.ReceiveData(data);
+                    await _instanceDataHub.Clients.All.ReceiveData(data);
                 }
                 catch (ArgumentException)
                 {
-                    _logger.LogWarning($"Invalid InstanceConnection entities detected for Instance #{currentId}");
+                    _logger.LogWarning($"Invalid {typeof(InstanceConnection).Name} entities detected for Instance #{currentId}");
                     return;
                 }
             });
@@ -85,21 +91,19 @@ public class BroadcastService : BackgroundService
         }
     }
 
-    public InstanceDataDto FetchData(ICollection<InstanceConnection> instanceConnections,
-        IConnectionMethodService connectionMethodService)
+    public InstanceDataDto FetchData(ICollection<InstanceConnection> instanceConnections)
     {
-
         if (instanceConnections.FirstOrDefault() is not InstanceConnection connection
             || connection.IP == null || connection.SshUsername == null)
-            throw new ArgumentException("Invalid InstanceConnection was passed");
+            throw new ArgumentException($"Invalid {typeof(InstanceConnection).Name} was passed");
 
         // Fetching data
         InstanceDataDto? data = null;
-        if (connectionMethodService is SshConnectionMethodService)
+        if (_connectionMethodService is SshConnectionMethodService)
         {
             if (connection.SshPassword != null)
             {
-                data = connectionMethodService.FetchData(connection.IP, connection.SshUsername, connection.SshPassword);
+                data = _connectionMethodService.FetchData(connection.IP, connection.SshUsername, connection.SshPassword);
             }
             else if (connection.SshPrivateKey != null)
             {
@@ -108,17 +112,17 @@ public class BroadcastService : BackgroundService
                     keyFile = new PrivateKeyFile(new MemoryStream(connection.SshPrivateKey), connection.SshKeyPassphrase);
                 else
                     keyFile = new PrivateKeyFile(new MemoryStream(connection.SshPrivateKey));
-                data = connectionMethodService.FetchData(connection.IP, connection.SshUsername, keyFile);
+                data = _connectionMethodService.FetchData(connection.IP, connection.SshUsername, keyFile);
             }
         }
         else
         {
-            throw new NotImplementedException("New class of IConnectionMethodService interfact was created but no handling logic was implemented");
+            throw new NotImplementedException($"New class of {typeof(IConnectionMethodService).Name} interfact was created but no handling logic was implemented");
         }
 
         // If no connection info was found
         if (data == null)
-            throw new ArgumentException("No connection info was found in InstanceConnection");
+            throw new ArgumentException($"No connection info was found in {typeof(InstanceConnection).Name}");
 
         return data;
     }
