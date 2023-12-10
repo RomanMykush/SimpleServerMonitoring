@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SimpleServerMonitoring.Dtos;
 
 public class NewInstanceDto
 {
-    public string? Name { get; set; }
+    [Required]
+    public string Name { get; set; } = null!;
     public string? Description { get; set; }
-    public string? OS { get; set; }
+    [Required]
+    public string OS { get; set; } = null!;
 }

@@ -46,7 +46,6 @@ public class InstanceConnectionsController : ControllerBase
     // PUT: api/InstanceConnections/5
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PutInstanceConnection(long id, NewInstanceConnectionDto dto)
     {
@@ -62,13 +61,9 @@ public class InstanceConnectionsController : ControllerBase
     // POST: api/InstanceConnections/Instance/5
     [HttpPost("Instance/{instanceId}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullInstanceConnectionDto>> PostInstanceConnection(long instanceId, NewInstanceConnectionDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.IP))
-            return BadRequest(new ErrorDto() { Message = "InstanceConnection.IP cannot be null or empty" });
-
         var instanceConnection = _mapper.Map<InstanceConnection>(dto);
         if (!await _service.PostInstanceConnectionAsync(instanceId, instanceConnection))
             return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
