@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
-using Renci.SshNet;
 using SimpleServerMonitoring.Dtos;
 using SimpleServerMonitoring.Helper;
 using SimpleServerMonitoring.Hubs;
@@ -13,6 +12,7 @@ public class BroadcastService : BackgroundService
 {
     private const int TimerInterval = 2;
     private readonly ConcurrentDictionary<long, Task> DataFetchTasks = new();
+    private readonly ConcurrentDictionary<long, long> PreferedConnection = new();
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(TimerInterval));
     private readonly ILogger<BroadcastService> _logger;
     private readonly IServiceProvider _serviceProvider;
@@ -22,6 +22,7 @@ public class BroadcastService : BackgroundService
     private IInstanceConnectionService _instanceConnectionService = null!;
     private IConnectionMethodService _connectionMethodService = null!;
     private IHubContext<InstanceDataHub, IInstanceDataClient> _instanceDataHub = null!;
+
     public BroadcastService(IServiceProvider serviceProvider,
         ILogger<BroadcastService> logger)
     {
@@ -71,56 +72,71 @@ public class BroadcastService : BackgroundService
                 continue;
             }
 
-            // Create Task of data transfer
-            var task = Task.Run(async () =>
+            if (!PreferedConnection.ContainsKey(currentId))
+                PreferedConnection[currentId] = instanceConnections.OrderBy(ic => ic.Id).First().Id;
+
+            var connection = instanceConnections.FirstOrDefault(ic => ic.Id == PreferedConnection[currentId]);
+            if (connection == null)
             {
-                try
-                {
-                    // Fetch data from instance
-                    var data = FetchData(instanceConnections);
-                    // Set instance id
-                    data.InstanceId = currentId;
-                    // Broadcast data to clients
-                    await _instanceDataHub.Clients.All.ReceiveData(data);
-                }
-                catch (ArgumentException)
-                {
-                    _logger.LogWarning($"Invalid {typeof(InstanceConnection).Name} entities detected for Instance #{currentId}");
-                    return;
-                }
-            });
+                FindNextPreferedConnection(currentId, instanceConnections);
+                continue;
+            }
+            // Create Task of data transfer
+            var task = Task.Run(async () => await TransferDataTaskBody(currentId, instanceConnections));
 
             DataFetchTasks[currentId] = task;
         }
     }
 
-    public InstanceDataDto FetchData(ICollection<InstanceConnection> instanceConnections)
+    private void FindNextPreferedConnection(long instanceId, ICollection<InstanceConnection> instanceConnections)
     {
-        if (instanceConnections.FirstOrDefault() is not InstanceConnection connection)
-            throw new ArgumentException($"Empty collection of {typeof(InstanceConnection).Name} was passed");
+        if (instanceConnections == null || !instanceConnections.Any())
+            return;
 
-        // Fetching data
-        InstanceDataDto? data;
-        switch (_connectionMethodService)
+        var nextConnections = instanceConnections.Where(ic => ic.Id > PreferedConnection[instanceId]);
+        if (!nextConnections.Any())
         {
-            case SshConnectionMethodService:
-                var details = new SshConnectionMethodDetails(connection.SshUsername)
-                {
-                    Password = connection.SshPassword,
-                    PrivateKey = connection.SshPrivateKey,
-                    KeyPassphrase = connection.SshKeyPassphrase
-                };
-
-                data = _connectionMethodService.FetchData(connection.IP, details);
-                break;
-            default:
-                throw new NotImplementedException($"New class of {typeof(IConnectionMethodService).Name} interfact was created but no handling logic was implemented");
+            PreferedConnection[instanceId] = instanceConnections.OrderBy(ic => ic.Id).First().Id;
+            return;
         }
+        PreferedConnection[instanceId] = nextConnections.OrderBy(ic => ic.Id).First().Id;
+    }
 
-        // If no connection info was found
-        if (data == null)
-            throw new ArgumentException($"No connection info was found in {typeof(InstanceConnection).Name}");
+    private async Task TransferDataTaskBody(long instanceId, ICollection<InstanceConnection> instanceConnections)
+    {
+        try
+        {
+            var connection = instanceConnections.First(ic => ic.Id == PreferedConnection[instanceId]);
+            // Fetch data from instance
+            var data = FetchData(connection);
+            // Set instance id
+            data.InstanceId = instanceId;
 
-        return data;
+            if (!data.IsOnline)
+                FindNextPreferedConnection(instanceId, instanceConnections);
+            // Broadcast data to clients
+            await _instanceDataHub.Clients.All.ReceiveData(data);
+        }
+        catch (ArgumentException exc)
+        {
+            _logger.LogWarning(exc.Message);
+            return;
+        }
+    }
+
+    private InstanceDataDto FetchData(InstanceConnection connection)
+    {
+        IConnectionMethodDetails details = _connectionMethodService switch
+        {
+            SshConnectionMethodService => new SshConnectionMethodDetails(connection.SshUsername)
+            {
+                Password = connection.SshPassword,
+                PrivateKey = connection.SshPrivateKey,
+                KeyPassphrase = connection.SshKeyPassphrase
+            },
+            _ => throw new NotImplementedException($"New class of {typeof(IConnectionMethodService).Name} interfact was created but no handling logic was implemented"),
+        };
+
+        return _connectionMethodService.FetchData(connection.IP, details);
     }
 }
