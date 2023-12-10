@@ -1,35 +1,50 @@
 using System.Text.RegularExpressions;
 using Renci.SshNet;
 using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Helper;
 using SimpleServerMonitoring.Interfaces;
 
 namespace SimpleServerMonitoring.Services;
 
 public class SshConnectionMethodService : IConnectionMethodService
 {
-    const int Timeout = 5;
-    public InstanceDataDto FetchData(string host, string username, string password)
+    private const int Timeout = 5;
+
+    public InstanceDataDto FetchData(string host, IConnectionMethodDetails details)
     {
-        var connectionInfo = new Renci.SshNet.ConnectionInfo(
-                host,
-                username,
-                new PasswordAuthenticationMethod(username, password))
+        if (details is not SshConnectionMethodDetails sshDetails)
+            throw new ArgumentException("Invalid IConnectionMethodDetails object was passed as argument");
+
+        if (sshDetails.Password != null)
         {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-        return Connect(connectionInfo);
+            var connectionInfo = new Renci.SshNet.ConnectionInfo(
+                host,
+                sshDetails.Username,
+                new PasswordAuthenticationMethod(sshDetails.Username, sshDetails.Password))
+            { Timeout = TimeSpan.FromSeconds(Timeout) };
+            return Connect(connectionInfo);
+        }
+
+        if (sshDetails.PrivateKey != null)
+        {
+            PrivateKeyFile keyFile = GetPrivateKeyFile(sshDetails);
+
+            var connectionInfo = new Renci.SshNet.ConnectionInfo(
+                host,
+                sshDetails.Username,
+                new PrivateKeyAuthenticationMethod(sshDetails.Username, keyFile))
+            { Timeout = TimeSpan.FromSeconds(Timeout) };
+            return Connect(connectionInfo);
+        }
+
+        throw new ArgumentException("No secrets were found in IConnectionMethodDetails");
     }
 
-    public InstanceDataDto FetchData(string host, string username, PrivateKeyFile privateKey)
+    private PrivateKeyFile GetPrivateKeyFile(SshConnectionMethodDetails details)
     {
-        var connectionInfo = new Renci.SshNet.ConnectionInfo(
-                host,
-                username,
-                new PrivateKeyAuthenticationMethod(username, privateKey))
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-        return Connect(connectionInfo);
+        if (details.KeyPassphrase != null)
+            return new PrivateKeyFile(new MemoryStream(details.PrivateKey!), details.KeyPassphrase);
+        return new PrivateKeyFile(new MemoryStream(details.PrivateKey!));
     }
 
     private InstanceDataDto Connect(Renci.SshNet.ConnectionInfo connectionInfo)
@@ -65,8 +80,7 @@ public class SshConnectionMethodService : IConnectionMethodService
                 int tempIndex = Array.FindIndex(tempArray, w => w == "x86_pkg_temp");
                 if (tempIndex < 0)
                     tempIndex = Array.FindIndex(tempArray, w => w == "acpitz");
-
-                if (tempIndex >= 0)
+                else
                 {
                     tempData = client.CreateCommand("cat /sys/class/thermal/thermal_zone" + tempIndex + "/temp").Execute();
                     cpuTemp = float.Parse(tempData) / 1000;
@@ -87,10 +101,7 @@ public class SshConnectionMethodService : IConnectionMethodService
         {
             if (exc is Renci.SshNet.Common.SshOperationTimeoutException
                 || exc is System.Net.Sockets.SocketException)
-                return new InstanceDataDto()
-                {
-                    IsOnline = false
-                };
+                return new InstanceDataDto() { IsOnline = false };
 
             throw;
         }

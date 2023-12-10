@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
 using Renci.SshNet;
 using SimpleServerMonitoring.Dtos;
+using SimpleServerMonitoring.Helper;
 using SimpleServerMonitoring.Hubs;
 using SimpleServerMonitoring.Interfaces;
 using SimpleServerMonitoring.Models;
@@ -10,11 +11,12 @@ namespace SimpleServerMonitoring.Services;
 
 public class BroadcastService : BackgroundService
 {
+    private const int TimerInterval = 2;
     private readonly ConcurrentDictionary<long, Task> DataFetchTasks = new();
-    private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(2));
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(TimerInterval));
     private readonly ILogger<BroadcastService> _logger;
     private readonly IServiceProvider _serviceProvider;
-    
+
     // Services that are created from new scope every _timer tick
     private IInstanceService _instanceService = null!;
     private IInstanceConnectionService _instanceConnectionService = null!;
@@ -26,6 +28,7 @@ public class BroadcastService : BackgroundService
         _logger = logger;
         _serviceProvider = serviceProvider;
     }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation($"Start of {typeof(BroadcastService).Name} execution");
@@ -93,31 +96,25 @@ public class BroadcastService : BackgroundService
 
     public InstanceDataDto FetchData(ICollection<InstanceConnection> instanceConnections)
     {
-        if (instanceConnections.FirstOrDefault() is not InstanceConnection connection
-            || connection.IP == null || connection.SshUsername == null)
-            throw new ArgumentException($"Invalid {typeof(InstanceConnection).Name} was passed");
+        if (instanceConnections.FirstOrDefault() is not InstanceConnection connection)
+            throw new ArgumentException($"Empty collection of {typeof(InstanceConnection).Name} was passed");
 
         // Fetching data
-        InstanceDataDto? data = null;
-        if (_connectionMethodService is SshConnectionMethodService)
+        InstanceDataDto? data;
+        switch (_connectionMethodService)
         {
-            if (connection.SshPassword != null)
-            {
-                data = _connectionMethodService.FetchData(connection.IP, connection.SshUsername, connection.SshPassword);
-            }
-            else if (connection.SshPrivateKey != null)
-            {
-                PrivateKeyFile keyFile;
-                if (connection.SshKeyPassphrase != null)
-                    keyFile = new PrivateKeyFile(new MemoryStream(connection.SshPrivateKey), connection.SshKeyPassphrase);
-                else
-                    keyFile = new PrivateKeyFile(new MemoryStream(connection.SshPrivateKey));
-                data = _connectionMethodService.FetchData(connection.IP, connection.SshUsername, keyFile);
-            }
-        }
-        else
-        {
-            throw new NotImplementedException($"New class of {typeof(IConnectionMethodService).Name} interfact was created but no handling logic was implemented");
+            case SshConnectionMethodService:
+                var details = new SshConnectionMethodDetails(connection.SshUsername)
+                {
+                    Password = connection.SshPassword,
+                    PrivateKey = connection.SshPrivateKey,
+                    KeyPassphrase = connection.SshKeyPassphrase
+                };
+
+                data = _connectionMethodService.FetchData(connection.IP, details);
+                break;
+            default:
+                throw new NotImplementedException($"New class of {typeof(IConnectionMethodService).Name} interfact was created but no handling logic was implemented");
         }
 
         // If no connection info was found
