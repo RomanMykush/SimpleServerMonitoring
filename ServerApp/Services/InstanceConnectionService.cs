@@ -13,7 +13,7 @@ public class InstanceConnectionService : IInstanceConnectionService
         _context = context;
     }
 
-    public async Task<ICollection<InstanceConnection>?> GetInstanceConnectionsAsync(long instanceId)
+    public async Task<ICollection<InstanceConnection>?> GetInstanceConnections(long instanceId)
     {
         var instance = await _context.Instances.Where(p => p.Id == instanceId).Include(p => p.InstanceConnections).FirstOrDefaultAsync();
         if (instance == null)
@@ -21,9 +21,9 @@ public class InstanceConnectionService : IInstanceConnectionService
         return instance.InstanceConnections;
     }
 
-    public async Task<InstanceConnection?> GetInstanceConnectionAsync(long id) => await _context.InstanceConnections.Where(p => p.Id == id).FirstOrDefaultAsync();
+    public async Task<InstanceConnection?> GetInstanceConnection(long id) => await _context.InstanceConnections.Where(p => p.Id == id).FirstOrDefaultAsync();
 
-    public async Task<bool> PutInstanceConnectionAsync(InstanceConnection instanceConnection)
+    public async Task<bool> PutInstanceConnection(InstanceConnection instanceConnection)
     {
         _context.Entry(instanceConnection).State = EntityState.Modified;
 
@@ -41,7 +41,7 @@ public class InstanceConnectionService : IInstanceConnectionService
         return true;
     }
 
-    public async Task<bool> PostInstanceConnectionAsync(long instanceId, InstanceConnection instanceConnection)
+    public async Task<bool> AddInstanceConnection(long instanceId, InstanceConnection instanceConnection)
     {
         var instance =  await _context.Instances.Where(p => p.Id == instanceId).FirstOrDefaultAsync();
 
@@ -55,9 +55,9 @@ public class InstanceConnectionService : IInstanceConnectionService
         return true;
     }
 
-    public async Task<bool> DeleteInstanceConnectionAsync(long id)
+    public async Task<bool> DeleteInstanceConnection(long id)
     {
-        var instanceConnection = await GetInstanceConnectionAsync(id);
+        var instanceConnection = await GetInstanceConnection(id);
         if (instanceConnection == null)
             return false;
 

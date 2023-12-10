@@ -4,10 +4,10 @@ namespace SimpleServerMonitoring.Interfaces;
 
 public interface IInstanceConnectionService
 {
-    Task<ICollection<InstanceConnection>?> GetInstanceConnectionsAsync(long instanceId);
-    Task<InstanceConnection?> GetInstanceConnectionAsync(long id);
-    Task<bool> PutInstanceConnectionAsync(InstanceConnection instanceConnection);
-    Task<bool> PostInstanceConnectionAsync(long instanceId, InstanceConnection instanceConnection);
-    Task<bool> DeleteInstanceConnectionAsync(long id);
+    Task<ICollection<InstanceConnection>?> GetInstanceConnections(long instanceId);
+    Task<InstanceConnection?> GetInstanceConnection(long id);
+    Task<bool> PutInstanceConnection(InstanceConnection instanceConnection);
+    Task<bool> AddInstanceConnection(long instanceId, InstanceConnection instanceConnection);
+    Task<bool> DeleteInstanceConnection(long id);
     bool InstanceConnectionExists(long id);
 }

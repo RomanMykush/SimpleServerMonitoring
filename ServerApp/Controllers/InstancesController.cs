@@ -27,7 +27,7 @@ public class InstancesController : ControllerBase
     // GET: api/Instances
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ICollection<InstanceDto>>> GetInstances() => Ok(_mapper.Map<List<InstanceDto>>(await _service.GetInstancesAsync()));
+    public async Task<ActionResult<ICollection<InstanceDto>>> GetInstances() => Ok(_mapper.Map<List<InstanceDto>>(await _service.GetInstances()));
 
     // GET: api/Instances/5
     [HttpGet("{id}")]
@@ -35,7 +35,7 @@ public class InstancesController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<InstanceDto>> GetInstance(long id)
     {
-        var instance = await _service.GetInstanceAsync(id);
+        var instance = await _service.GetInstance(id);
 
         if (instance == null)
             return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
@@ -52,7 +52,7 @@ public class InstancesController : ControllerBase
         var instance = _mapper.Map<Instance>(dto);
         instance.Id = id;
 
-        if (!await _service.PutInstanceAsync(instance))
+        if (!await _service.PutInstance(instance))
             return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
 
         return NoContent();
@@ -64,7 +64,7 @@ public class InstancesController : ControllerBase
     public async Task<ActionResult<InstanceDto>> PostInstance(NewInstanceDto dto)
     {
         var instance = _mapper.Map<Instance>(dto);
-        await _service.PostInstanceAsync(instance);
+        await _service.AddInstance(instance);
 
         return CreatedAtAction(nameof(GetInstance), _mapper.Map<InstanceDto>(instance));
     }
@@ -75,7 +75,7 @@ public class InstancesController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteInstance(long id)
     {
-        if (!await _service.DeleteInstanceAsync(id))
+        if (!await _service.DeleteInstance(id))
             return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
 
         return NoContent();

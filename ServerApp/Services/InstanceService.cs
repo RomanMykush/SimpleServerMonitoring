@@ -13,11 +13,11 @@ public class InstanceService : IInstanceService
         _context = context;
     }
 
-    public async Task<ICollection<Instance>?> GetInstancesAsync() => await _context.Instances.ToListAsync();
+    public async Task<ICollection<Instance>?> GetInstances() => await _context.Instances.ToListAsync();
 
-    public async Task<Instance?> GetInstanceAsync(long id) => await _context.Instances.Where(p => p.Id == id).Include(p => p.InstanceConnections).FirstOrDefaultAsync();
+    public async Task<Instance?> GetInstance(long id) => await _context.Instances.Where(p => p.Id == id).Include(p => p.InstanceConnections).FirstOrDefaultAsync();
 
-    public async Task<bool> PutInstanceAsync(Instance instance)
+    public async Task<bool> PutInstance(Instance instance)
     {
         _context.Entry(instance).State = EntityState.Modified;
 
@@ -35,15 +35,15 @@ public class InstanceService : IInstanceService
         return true;
     }
 
-    public async Task PostInstanceAsync(Instance instance)
+    public async Task AddInstance(Instance instance)
     {
         _context.Instances.Add(instance);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteInstanceAsync(long id)
+    public async Task<bool> DeleteInstance(long id)
     {
-        var instance = await GetInstanceAsync(id);
+        var instance = await GetInstance(id);
         if (instance == null)
             return false;
 

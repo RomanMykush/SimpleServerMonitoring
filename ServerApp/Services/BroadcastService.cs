@@ -49,7 +49,7 @@ public class BroadcastService : BackgroundService
 
     public async Task StartTransferingData()
     {
-        List<long> instanceIds = (await _instanceService.GetInstancesAsync())!.Select(i => i.Id).ToList();
+        List<long> instanceIds = (await _instanceService.GetInstances())!.Select(i => i.Id).ToList();
 
         foreach (var currentId in instanceIds)
         {
@@ -61,7 +61,7 @@ public class BroadcastService : BackgroundService
                 continue;
             }
 
-            var instanceConnections = await _instanceConnectionService.GetInstanceConnectionsAsync(currentId);
+            var instanceConnections = await _instanceConnectionService.GetInstanceConnections(currentId);
             if (instanceConnections == null || !instanceConnections.Any())
             {
                 _logger.LogTrace($"No connection info for {typeof(Instance).Name} #{currentId} was found");
