@@ -13,12 +13,20 @@ public class MappingProfile : Profile
         CreateMap<Instance, NewInstanceDto>().ReverseMap();
         CreateMap<InstanceConnection, InstanceConnectionDto>().ReverseMap();
         CreateMap<InstanceConnection, FullInstanceConnectionDto>()
-            .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetString(src.SshPrivateKey) : null));
+            .ForMember(dest => dest.SshPrivateKey, opt => opt
+                .MapFrom(src => src.SshPrivateKey != null && src.SshPrivateKey.Length > 0 ?
+                    Encoding.UTF8.GetString(src.SshPrivateKey) : null));
         CreateMap<FullInstanceConnectionDto, InstanceConnection>()
-            .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetBytes(src.SshPrivateKey) : null));
+            .ForMember(dest => dest.SshPrivateKey, opt => opt
+                .MapFrom(src => !string.IsNullOrEmpty(src.SshPrivateKey) ?
+                    Encoding.UTF8.GetBytes(src.SshPrivateKey) : null));
         CreateMap<InstanceConnection, NewInstanceConnectionDto>()
-            .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetString(src.SshPrivateKey) : null));
+            .ForMember(dest => dest.SshPrivateKey, opt => opt
+                .MapFrom(src => src.SshPrivateKey != null && src.SshPrivateKey.Length > 0 ?
+                    Encoding.UTF8.GetString(src.SshPrivateKey) : null));
         CreateMap<NewInstanceConnectionDto, InstanceConnection>()
-            .ForMember(dest => dest.SshPrivateKey, opt => opt.MapFrom(src => src.SshPrivateKey != null ? Encoding.UTF8.GetBytes(src.SshPrivateKey) : null));
+            .ForMember(dest => dest.SshPrivateKey, opt => opt
+                .MapFrom(src => !string.IsNullOrEmpty(src.SshPrivateKey) ?
+                    Encoding.UTF8.GetBytes(src.SshPrivateKey) : null));
     }
 }
