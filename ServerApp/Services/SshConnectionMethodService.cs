@@ -15,16 +15,6 @@ public class SshConnectionMethodService : IConnectionMethodService
         if (details is not SshConnectionMethodDetails sshDetails)
             throw new ArgumentException("Invalid IConnectionMethodDetails object was passed as argument");
 
-        if (sshDetails.Password != null)
-        {
-            var connectionInfo = new Renci.SshNet.ConnectionInfo(
-                host,
-                sshDetails.Username,
-                new PasswordAuthenticationMethod(sshDetails.Username, sshDetails.Password))
-            { Timeout = TimeSpan.FromSeconds(Timeout) };
-            return Connect(connectionInfo);
-        }
-
         if (sshDetails.PrivateKey != null)
         {
             PrivateKeyFile keyFile = GetPrivateKeyFile(sshDetails);
@@ -33,6 +23,16 @@ public class SshConnectionMethodService : IConnectionMethodService
                 host,
                 sshDetails.Username,
                 new PrivateKeyAuthenticationMethod(sshDetails.Username, keyFile))
+            { Timeout = TimeSpan.FromSeconds(Timeout) };
+            return Connect(connectionInfo);
+        }
+
+        if (sshDetails.Password != null)
+        {
+            var connectionInfo = new Renci.SshNet.ConnectionInfo(
+                host,
+                sshDetails.Username,
+                new PasswordAuthenticationMethod(sshDetails.Username, sshDetails.Password))
             { Timeout = TimeSpan.FromSeconds(Timeout) };
             return Connect(connectionInfo);
         }
