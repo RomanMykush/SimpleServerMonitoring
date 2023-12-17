@@ -38,7 +38,7 @@ public class InstancesController : ControllerBase
         var instance = await _service.GetInstance(id);
 
         if (instance == null)
-            return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
+            return NotFound(new ErrorDto() { Title = "Instance wasn't found" });
 
         return Ok(_mapper.Map<InstanceDto>(instance));
     }
@@ -46,6 +46,7 @@ public class InstancesController : ControllerBase
     // PUT: api/Instances/5
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PutInstance(long id, NewInstanceDto dto)
     {
@@ -53,7 +54,7 @@ public class InstancesController : ControllerBase
         instance.Id = id;
 
         if (!await _service.PutInstance(instance))
-            return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
+            return NotFound(new ErrorDto() { Title = "Instance wasn't found" });
 
         return NoContent();
     }
@@ -61,6 +62,7 @@ public class InstancesController : ControllerBase
     // POST: api/Instances
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<InstanceDto>> PostInstance(NewInstanceDto dto)
     {
         var instance = _mapper.Map<Instance>(dto);
@@ -76,7 +78,7 @@ public class InstancesController : ControllerBase
     public async Task<IActionResult> DeleteInstance(long id)
     {
         if (!await _service.DeleteInstance(id))
-            return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
+            return NotFound(new ErrorDto() { Title = "Instance wasn't found" });
 
         return NoContent();
     }

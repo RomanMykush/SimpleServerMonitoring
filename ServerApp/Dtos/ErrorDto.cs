@@ -2,5 +2,5 @@ namespace SimpleServerMonitoring.Dtos;
 
 public class ErrorDto
 {
-    public string? Message { get; set; }
+    public string? Title { get; set; }
 }

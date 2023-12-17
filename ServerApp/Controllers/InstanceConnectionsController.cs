@@ -38,7 +38,7 @@ public class InstanceConnectionsController : ControllerBase
         var instanceConnection = await _service.GetInstanceConnection(id);
 
         if (instanceConnection == null)
-            return NotFound(new ErrorDto() { Message = "InstanceConnection wasn't found" });
+            return NotFound(new ErrorDto() { Title = "InstanceConnection wasn't found" });
 
         return Ok(_mapper.Map<FullInstanceConnectionDto>(instanceConnection));
     }
@@ -46,6 +46,7 @@ public class InstanceConnectionsController : ControllerBase
     // PUT: api/InstanceConnections/5
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PutInstanceConnection(long id, NewInstanceConnectionDto dto)
     {
@@ -53,7 +54,7 @@ public class InstanceConnectionsController : ControllerBase
         instanceConnection.Id = id;
 
         if (!await _service.PutInstanceConnection(instanceConnection))
-            return NotFound(new ErrorDto() { Message = "InstanceConnection wasn't found" });
+            return NotFound(new ErrorDto() { Title = "InstanceConnection wasn't found" });
 
         return NoContent();
     }
@@ -61,12 +62,13 @@ public class InstanceConnectionsController : ControllerBase
     // POST: api/InstanceConnections/Instance/5
     [HttpPost("Instance/{instanceId}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullInstanceConnectionDto>> PostInstanceConnection(long instanceId, NewInstanceConnectionDto dto)
     {
         var instanceConnection = _mapper.Map<InstanceConnection>(dto);
         if (!await _service.AddInstanceConnection(instanceId, instanceConnection))
-            return NotFound(new ErrorDto() { Message = "Instance wasn't found" });
+            return NotFound(new ErrorDto() { Title = "Instance wasn't found" });
 
         return CreatedAtAction(nameof(GetInstanceConnection), _mapper.Map<FullInstanceConnectionDto>(instanceConnection));
     }
@@ -78,7 +80,7 @@ public class InstanceConnectionsController : ControllerBase
     public async Task<IActionResult> DeleteInstanceConnection(long id)
     {
         if (!await _service.DeleteInstanceConnection(id))
-            return NotFound(new ErrorDto() { Message = "InstanceConnection wasn't found" });
+            return NotFound(new ErrorDto() { Title = "InstanceConnection wasn't found" });
 
         return NoContent();
     }
