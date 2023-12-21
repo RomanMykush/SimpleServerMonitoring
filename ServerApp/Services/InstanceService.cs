@@ -47,8 +47,7 @@ public class InstanceService : IInstanceService
         if (instance == null)
             return false;
 
-        if (instance.InstanceConnections != null)
-            _context.InstanceConnections.RemoveRange(instance.InstanceConnections);
+        _context.InstanceConnections.RemoveRange(instance.InstanceConnections);
 
         _context.Instances.Remove(instance);
         await _context.SaveChangesAsync();

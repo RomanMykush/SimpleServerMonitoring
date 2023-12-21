@@ -27,7 +27,8 @@ public class InstanceConnectionsController : ControllerBase
     // GET: api/InstanceConnections/Instance/5
     [HttpGet("Instance/{instanceId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ICollection<InstanceConnectionDto>>> GetInstanceConnectionsByInstance(long instanceId) => Ok(_mapper.Map<List<InstanceConnectionDto>>(await _service.GetInstanceConnections(instanceId)));
+    public async Task<ActionResult<ICollection<InstanceConnectionDto>>> GetInstanceConnectionsByInstance(long instanceId) =>
+        Ok(_mapper.Map<List<InstanceConnectionDto>>(await _service.GetInstanceConnections(instanceId)));
 
     // GET: api/InstanceConnections/5
     [HttpGet("{id}")]

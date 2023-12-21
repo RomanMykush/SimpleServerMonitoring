@@ -5,8 +5,8 @@ namespace SimpleServerMonitoring.Dtos;
 public class NewInstanceDto
 {
     [Required]
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
     public string? Description { get; set; }
     [Required]
-    public string OS { get; set; } = null!;
+    public required string OS { get; set; }
 }

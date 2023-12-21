@@ -43,11 +43,11 @@ public class InstanceConnectionService : IInstanceConnectionService
 
     public async Task<bool> AddInstanceConnection(long instanceId, InstanceConnection instanceConnection)
     {
-        var instance =  await _context.Instances.Where(p => p.Id == instanceId).FirstOrDefaultAsync();
+        var instance = await _context.Instances.Where(p => p.Id == instanceId).FirstOrDefaultAsync();
 
         if (instance == null)
             return false;
-        
+
         instanceConnection.Instance = instance;
 
         _context.InstanceConnections.Add(instanceConnection);

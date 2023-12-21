@@ -27,7 +27,8 @@ public class InstancesController : ControllerBase
     // GET: api/Instances
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ICollection<InstanceDto>>> GetInstances() => Ok(_mapper.Map<List<InstanceDto>>(await _service.GetInstances()));
+    public async Task<ActionResult<ICollection<InstanceDto>>> GetInstances() =>
+        Ok(_mapper.Map<List<InstanceDto>>(await _service.GetInstances()));
 
     // GET: api/Instances/5
     [HttpGet("{id}")]
