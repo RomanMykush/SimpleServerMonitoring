@@ -2,7 +2,7 @@
   <div class="card-body">
     <div class="d-flex justify-content-between">
       <h4 class="card-title pe-3">SSH</h4>
-      <h4 class="card-text pe-3">{{connectionInfo.sshUsername}}@{{connectionInfo.ip}}</h4>
+      <h4 class="card-text pe-3">{{connectionInfo.sshUsername}}&#64;{{connectionInfo.ip}}</h4>
 
       <mat-menu #cardMenu="matMenu" xPosition="before">
         <button *ngIf="!fullConnectionInfo" (click)="onShowSecret()"mat-menu-item>Show secret</button>
