@@ -1,66 +1,77 @@
-<div class="container-fluid main-container h-100" [ngSwitch]="dataState">
-  <div *ngSwitchCase="dataStateEnum.Available">
-    <form (ngSubmit)="onSubmit(editForm)" #editForm="ngForm">
-      <!-- Basic instance info -->
-      <div class="d-flex">
-        <h3 class="flex-fill">Instance info</h3>
-        <button type="button" mat-icon-button class="h4-icon-button my-auto mb-3" routerLink="">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-      <div class="row mb-2">
-        <div class="col">
-          <input type="text" placeholder="Name" class="form-control" [ngModel]="instance?.name" name="name" required>
-        </div>
-        <div class="col-auto">
+<div class="container-fluid main-container h-100">
+  @switch (dataState) {
+    @case (dataStateEnum.Available) {
+      <div>
+        <form (ngSubmit)="onSubmit(editForm)" #editForm="ngForm">
+          <!-- Basic instance info -->
           <div class="d-flex">
-            <app-os-image class="my-auto pe-2" [osName]="osName.value" [hideText]="true"></app-os-image>
-            <input type="text" placeholder="OS Name" class="form-control" style="width: 7.5rem;"
-              [ngModel]="instance?.os" name="osName" required #osName="ngModel">
+            <h3 class="flex-fill">Instance info</h3>
+            <button type="button" mat-icon-button class="h4-icon-button my-auto mb-3" routerLink="">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
-        </div>
-      </div>
-      <input type="text" placeholder="Description" class="form-control mb-3" [ngModel]="instance?.description"
-        name="description">
-
-      <!-- Instance connection info -->
-      <div *ngIf="instConnInfos?.length">
-        <h3>Edit connections</h3>
-        <div class="mb-3 d-grid gap-3">
-          <div *ngFor="let connInfo of instConnInfos; let i = index">
-            <app-connection-edit [initData]="connInfo" (valueChanged)="onConnectionSubmit($event)"
-              (canceled)="onConnectionEditCancel(i)" (deleted)="onConnectionDelete(i)"></app-connection-edit>
+          <div class="row mb-2">
+            <div class="col">
+              <input type="text" placeholder="Name" class="form-control" [ngModel]="instance?.name" name="name" required>
+            </div>
+            <div class="col-auto">
+              <div class="d-flex">
+                <app-os-image class="my-auto pe-2" [osName]="osName.value" [hideText]="true"></app-os-image>
+                <input type="text" placeholder="OS Name" class="form-control" style="width: 7.5rem;"
+                  [ngModel]="instance?.os" name="osName" required #osName="ngModel">
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="d-flex">
-        <h3>New connections</h3>
-        <button type="button" (click)="onNewConnectionCreated()" mat-icon-button class="h4-icon-button mt-1 ms-2">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <div *ngIf="newInstConnInfos?.length; else noNewConnections">
-        <div class="mb-3 d-grid gap-3">
-          <div *ngFor="let connInfo of newInstConnInfos; let i = index">
-            <app-connection-edit [initData]="connInfo" [isNew]="true" (valueChanged)="onNewConnectionSubmit($event)"
-              (deleted)="onNewConnectionDelete(i)"></app-connection-edit>
+          <input type="text" placeholder="Description" class="form-control mb-3" [ngModel]="instance?.description"
+            name="description">
+          <!-- Instance connection info -->
+          @if (instConnInfos?.length) {
+            <div>
+              <h3>Edit connections</h3>
+              <div class="mb-3 d-grid gap-3">
+                @for (connInfo of instConnInfos; track connInfo; let i = $index) {
+                  <div>
+                    <app-connection-edit [initData]="connInfo" (valueChanged)="onConnectionSubmit($event)"
+                    (canceled)="onConnectionEditCancel(i)" (deleted)="onConnectionDelete(i)"></app-connection-edit>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+          <div class="d-flex">
+            <h3>New connections</h3>
+            <button type="button" (click)="onNewConnectionCreated()" mat-icon-button class="h4-icon-button mt-1 ms-2">
+              <mat-icon>add</mat-icon>
+            </button>
           </div>
-        </div>
+          @if (newInstConnInfos?.length) {
+            <div>
+              <div class="mb-3 d-grid gap-3">
+                @for (connInfo of newInstConnInfos; track connInfo; let i = $index) {
+                  <div>
+                    <app-connection-edit [initData]="connInfo" [isNew]="true" (valueChanged)="onNewConnectionSubmit($event)"
+                    (deleted)="onNewConnectionDelete(i)"></app-connection-edit>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <p>No new connection were added...</p>
+          }
+          <button [disabled]="!editForm.valid || !checkValidityOfSubforms()" type="submit"
+          class="btn btn-primary flex-fill">Apply changes</button>
+        </form>
       </div>
-      <ng-template #noNewConnections>
-        <p>No new connection were added...</p>
-      </ng-template>
-
-      <button [disabled]="!editForm.valid || !checkValidityOfSubforms()" type="submit"
-        class="btn btn-primary flex-fill">Apply changes</button>
-    </form>
-  </div>
-
-  <div *ngSwitchCase="dataStateEnum.Loading" class="h-100">
-    <app-loading-spinner></app-loading-spinner>
-  </div>
-
-  <div *ngSwitchCase="dataStateEnum.Failed" class="h-100">
-    <app-loading-fail></app-loading-fail>
-  </div>
+    }
+    @case (dataStateEnum.Loading) {
+      <div class="h-100">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    }
+    @case (dataStateEnum.Failed) {
+      <div class="h-100">
+        <app-loading-fail></app-loading-fail>
+      </div>
+    }
+  }
 </div>

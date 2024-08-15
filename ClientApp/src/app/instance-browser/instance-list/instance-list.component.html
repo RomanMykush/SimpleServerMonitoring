@@ -14,8 +14,10 @@
       </div>
     </div>
     <div #itemListRow class="row g-3 mx-auto">
-      <app-instance-card-item [ngClass]="'col-' + 12 / columnNumber" *ngFor="let instance of instances"
+      @for (instance of instances; track instance) {
+        <app-instance-card-item [ngClass]="'col-' + 12 / columnNumber"
         [instance]="instance"></app-instance-card-item>
+      }
     </div>
   </div>
 </div>

@@ -16,23 +16,26 @@
     </div>
     <p class="card-text">{{instance.description}}</p>
 
-    <div class="row" *ngIf="isActive()">
-      <div class="col">
-        <div class="d-flex justify-content-center gap-1">
-          <h5 class="px-1">CPU</h5>
-          <app-temperature-icon [degrees]="instanceData.cpuTemp" *ngIf="instanceData.cpuTemp"></app-temperature-icon>
+    @if (isActive()) {
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-center gap-1">
+            <h5 class="px-1">CPU</h5>
+            @if (instanceData.cpuTemp) {
+              <app-temperature-icon [degrees]="instanceData.cpuTemp"></app-temperature-icon>
+            }
+          </div>
+          <div class="progress mx-auto">
+            <div class="progress-bar" [ngStyle]="{width: getCpuLoadPercent()}"></div>
+          </div>
         </div>
-        <div class="progress mx-auto">
-          <div class="progress-bar" [ngStyle]="{width: getCpuLoadPercent()}"></div>
+        <div class="col text-center">
+          <h5>RAM</h5>
+          <div class="progress mx-auto">
+            <div class="progress-bar" [ngStyle]="{width: getRamLoadPercent()}"></div>
+          </div>
         </div>
-
       </div>
-      <div class="col text-center">
-        <h5>RAM</h5>
-        <div class="progress mx-auto">
-          <div class="progress-bar" [ngStyle]="{width: getRamLoadPercent()}"></div>
-        </div>
-      </div>
-    </div>
+    }
   </div>
 </div>

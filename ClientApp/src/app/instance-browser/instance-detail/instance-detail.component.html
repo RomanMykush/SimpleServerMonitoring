@@ -1,72 +1,84 @@
-<div class="container-fluid main-container h-100" [ngSwitch]="dataState">
-  <div *ngSwitchCase="dataStateEnum.Available">
-    <!-- Basic instance info -->
-    <div class="row">
-      <div class="col">
-        <h3>{{instance.name}}</h3>
-      </div>
-      <div class="col-auto">
-        <app-os-image [osName]="instance.os"></app-os-image>
-      </div>
-      <div class="col-auto">
-        <mat-menu #detailMenu="matMenu" xPosition="before">
-          <button routerLink="" mat-menu-item>Close</button>
-          <button routerLink="edit" mat-menu-item>Edit</button>
-          <button (click)="onDelete()" mat-menu-item>Delete</button>
-        </mat-menu>
-        <button mat-icon-button class="h4-icon-button" [matMenuTriggerFor]="detailMenu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-      </div>
-    </div>
-    <p>{{instance.description}}</p>
-    <!-- Instance data -->
-    <div *ngIf="isActive()">
-      <h3>Data</h3>
-      <!-- Cpu data -->
-      <div class="row">
-        <div class="col">
-          <div class="d-flex">
-            <h5 class="pe-1">CPU</h5>
-            <app-temperature-icon [degrees]="instanceData.cpuTemp" *ngIf="instanceData.cpuTemp"></app-temperature-icon>
+<div class="container-fluid main-container h-100">
+  @switch (dataState) {
+    @case (dataStateEnum.Available) {
+      <div>
+        <!-- Basic instance info -->
+        <div class="row">
+          <div class="col">
+            <h3>{{instance.name}}</h3>
+          </div>
+          <div class="col-auto">
+            <app-os-image [osName]="instance.os"></app-os-image>
+          </div>
+          <div class="col-auto">
+            <mat-menu #detailMenu="matMenu" xPosition="before">
+              <button routerLink="" mat-menu-item>Close</button>
+              <button routerLink="edit" mat-menu-item>Edit</button>
+              <button (click)="onDelete()" mat-menu-item>Delete</button>
+            </mat-menu>
+            <button mat-icon-button class="h4-icon-button" [matMenuTriggerFor]="detailMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
           </div>
         </div>
-        <div class="col-auto">
-          {{getCpuLoadPercent()}}
+        <p>{{instance.description}}</p>
+        <!-- Instance data -->
+        @if (isActive()) {
+          <div>
+            <h3>Data</h3>
+            <!-- Cpu data -->
+            <div class="row">
+              <div class="col">
+                <div class="d-flex">
+                  <h5 class="pe-1">CPU</h5>
+                  @if (instanceData.cpuTemp) {
+                    <app-temperature-icon [degrees]="instanceData.cpuTemp"></app-temperature-icon>
+                  }
+                </div>
+              </div>
+              <div class="col-auto">
+                {{getCpuLoadPercent()}}
+              </div>
+            </div>
+            <div class="progress mx-auto">
+              <div class="progress-bar" [ngStyle]="{width: getCpuLoadPercent()}"></div>
+            </div>
+            <!-- Ram data -->
+            <div class="row">
+              <div class="col">
+                <h5>RAM</h5>
+              </div>
+              <div class="col-auto">
+                {{instanceData.ramLoad / 1024 | number: '1.0-0'}} MB / {{instanceData.maxRam / 1024 | number: '1.0-0'}} MB
+              </div>
+            </div>
+            <div class="progress mx-auto">
+              <div class="progress-bar" [ngStyle]="{width: getRamLoadPercent()}"></div>
+            </div>
+          </div>
+        }
+        <!-- Instance connection info -->
+        <div>
+          <h3>Connections</h3>
+          <div class="d-grid gap-2">
+            @for (connInfo of instConnInfos; track connInfo) {
+              <div>
+                <app-connection-detail [connectionInfo]="connInfo"></app-connection-detail>
+              </div>
+            }
+          </div>
         </div>
       </div>
-      <div class="progress mx-auto">
-        <div class="progress-bar" [ngStyle]="{width: getCpuLoadPercent()}"></div>
+    }
+    @case (dataStateEnum.Loading) {
+      <div class="h-100">
+        <app-loading-spinner></app-loading-spinner>
       </div>
-      <!-- Ram data -->
-      <div class="row">
-        <div class="col">
-          <h5>RAM</h5>
-        </div>
-        <div class="col-auto">
-          {{instanceData.ramLoad / 1024 | number: '1.0-0'}} MB / {{instanceData.maxRam / 1024 | number: '1.0-0'}} MB
-        </div>
+    }
+    @case (dataStateEnum.Failed) {
+      <div class="h-100">
+        <app-loading-fail></app-loading-fail>
       </div>
-      <div class="progress mx-auto">
-        <div class="progress-bar" [ngStyle]="{width: getRamLoadPercent()}"></div>
-      </div>
-    </div>
-    <!-- Instance connection info -->
-    <div>
-      <h3>Connections</h3>
-      <div class="d-grid gap-2">
-        <div *ngFor="let connInfo of instConnInfos">
-          <app-connection-detail [connectionInfo]="connInfo"></app-connection-detail>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div *ngSwitchCase="dataStateEnum.Loading" class="h-100">
-    <app-loading-spinner></app-loading-spinner>
-  </div>
-
-  <div *ngSwitchCase="dataStateEnum.Failed" class="h-100">
-    <app-loading-fail></app-loading-fail>
-  </div>
+    }
+  }
 </div>
