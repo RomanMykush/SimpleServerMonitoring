@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 
@@ -21,32 +21,25 @@ import { ConnectionEditComponent } from './instance-browser/instance-edit/connec
 import { OsImageComponent } from './shared/components/os-image/os-image.component';
 import { FormsModule } from '@angular/forms';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    InstanceListComponent,
-    InstanceBrowserComponent,
-    InstanceCardItemComponent,
-    TemperatureIconComponent,
-    InstanceDetailComponent,
-    InstanceEditComponent,
-    DummyComponent,
-    LoadingSpinnerComponent,
-    LoadingFailComponent,
-    ConnectionDetailComponent,
-    ConnectionEditComponent,
-    OsImageComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MaterialModule,
-    FormsModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HeaderComponent,
+        InstanceListComponent,
+        InstanceBrowserComponent,
+        InstanceCardItemComponent,
+        TemperatureIconComponent,
+        InstanceDetailComponent,
+        InstanceEditComponent,
+        DummyComponent,
+        LoadingSpinnerComponent,
+        LoadingFailComponent,
+        ConnectionDetailComponent,
+        ConnectionEditComponent,
+        OsImageComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MaterialModule,
+        FormsModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
